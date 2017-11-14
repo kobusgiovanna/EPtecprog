@@ -89,6 +89,14 @@ void Put(Maquina *soldier, int dir, Celula arena[200][200]){
     }else{printf("%s", "Posicao invalida");}
 }
 
+static void Erro(char *msg) {
+    fprintf(stderr, "%s\n", msg);
+}
+
+static void Fatal(char *msg, int cod) {
+    Erro(msg);
+    exit(cod);
+}
 
 //registro dos ponteiros das maquinas no vetor a[] de robos
 void registro_maquina(Maquina *m){
@@ -96,6 +104,31 @@ void registro_maquina(Maquina *m){
     while(a[i] != NULL)
         i++;
     a[i] = m;
+}
+
+Maquina *cria_maquina(INSTR *p) {
+    srand(time(NULL));
+    int coordX = rand()%200;
+    int coordY = rand()%200;
+    Maquina *m = (Maquina*)malloc(sizeof(Maquina));
+    if (!m) Fatal("Memória insuficiente",4);
+    m -> x = coordX;
+    m -> y = coordY;
+        do{
+            int coordX = rand()%200;
+            int coordY = rand()%200;
+            m -> x = coordX;
+            m -> y = coordY;
+        }while(arena[coordX][coordY].ocupado == 1);
+    arena[coordX][coordY].ocupado = 1;
+    m->cristais = 0;
+    m->ip = 0;
+    m->prog = p;
+    return m;
+}
+
+void destroi_maquina(Maquina *m) {
+    free(m);
 }
 
 //faz a base do time z no par (x,y)
@@ -140,6 +173,10 @@ void Atualiza(int n){
             exec_maquina(a[i], 50);
         else break;
     
+}
+
+int main(){
+    return 0;
 }
 
 

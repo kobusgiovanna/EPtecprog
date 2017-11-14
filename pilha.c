@@ -29,15 +29,6 @@ void empilha(Pilha *p, OPERANDO op) {
     else Erro("Pilha cheia");
 }
 
-void empilhaint(Pilha *p, int n) {
-    if (p->topo < PILMAX){
-    OPERANDO temp;
-    temp.val.n = n;
-    p->val[p->topo++] = temp;
-    }
-    else Erro("Pilha cheia");
-}
-
 OPERANDO desempilha(Pilha *p) {
     if (p->topo > 0)
         return p->val[--p->topo];
