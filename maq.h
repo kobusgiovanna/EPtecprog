@@ -12,6 +12,7 @@ typedef struct {
   int cristais;
   int x, y;
   int baseX, baseY;
+  int vida;
 } Maquina;
 
 Maquina *cria_maquina(INSTR *p);
