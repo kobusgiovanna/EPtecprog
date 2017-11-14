@@ -55,34 +55,39 @@ void constroi(){
 //system calls
 //movimentar os robos
 // 0=N,1=NE,2=SE,3=S,4=SW,5=NW
-//void Move(Maquina *soldier, int dir, Celula arena, int Npasos){
-//    if((soldier->x + Npasos*movx[dir] >= 0) && (soldier->x + Npasos*movx[dir] < 200) && (soldier->y + Npasos*movy[dir] >= 0) && (soldier->y + Npasos*movy[dir] < 200)){
-//        if((arena[soldier->x + Npasos*movx[dir]][soldier->y + Npasos*movy[dir]]).ocupado == 0){
-//            soldier->x = soldier->x + Npasos*movx[dir];
-//            soldier->y = soldier->y + Npasos*movx[dir];
-//            (arena[soldier->x + Npasos*movx[dir]][soldier->y + Npasos*movy[dir]]).ocupado = 1;
-//            (arena[soldier->x][soldier->y]).ocupado = 0;
-//        }else {printf("%s", "A operaÁ„o n„o pode ser realizada com sucesso. A Celula j· estava ocupada");}
-//    }else {printf("%s", "A operaÁ„o n„o pode ser realizada com sucesso. Seu soldado provavelmente n„o quer dar um dive pra fora da arena.");}
-//}
-////recolhe cristal
-//void Retrieve(Maquina soldier, int dir, Celula arena){
-//    if(soldier.x - 1 >= 0 && soldier.x + 1 < 200 && soldier.y - 1 >= 0 && soldier.y + 1 < 200){
-//        if((arena[soldier->x + movx[dir]][soldier->y + movy[dir]]).cristais > 0){
-//            (arena[soldier->x + movx[dir]][soldier->y + movy[dir]]).cristais --;
-//            soldier.cristais++;
-//        }else{printf("%s", "N„o h· cristal nessa posiÁ„o");}
-//                     }else{printf("%s", "Espertinho, n„o existem cristais escondidos fora da arena.");}
-//}
-////deposita cristal
-//void Put(Maquina soldier, int dir, Celula arena){
-//    if(soldier->x - 1 >= 0 && soldier->x + 1 < 200 && soldier->y - 1 >= 0 && soldier->y + 1 < 200){
-//        if(soldier->cristais > 0){
-//            (arena[soldier->x + movx[dir]][soldier->y + movy[dir]]).cristais ++;
-//            soldier.cristais--;
-//        }else{printf("%s", "Seu soldado não tem um cristal para ser colocado.");}
-//    }else{printf("%s", "Espertinho, não pode esconder os cristais fora da arena.");}
-//}
+int isvalid(int x,int y){
+    if(x>=0 && y>=0 && x<200 && y<200)return 1;
+    return 0;
+}
+
+void Move(Maquina *soldier, int dir, Celula arena, int n){
+    if(isvalid(soldier->x + n*movx[dir],soldier->y + n*movy[dir])){
+        if((arena[soldier->x + n*movx[dir]][soldier->y + n*movy[dir]]).ocupado == 0){
+            arena[soldier->x][soldier->y].ocupado = 0;
+            soldier->x = soldier->x + Npasos*movx[dir];
+            soldier->y = soldier->y + Npasos*movx[dir];
+            arena[soldier->x][soldier->y].ocupado = 1;
+        }else {printf("%s", "A Celula ja estava ocupada");}
+    }else {printf("%s", "Movimento fora dos limites da arena.");}
+}
+//recolhe cristal
+void Retrieve(Maquina *soldier, int dir, Celula arena){
+    if(isvalid(soldier->x + movx[dir],soldier->y + movy[dir])){
+        if((arena[soldier->x + movx[dir]][soldier->y + movy[dir]]).cristais > 0){
+            (arena[soldier->x + movx[dir]][soldier->y + movy[dir]]).cristais-=1;
+            soldier->cristais+=1;
+        }else{printf("%s", "Nao ha cristal nessa posicao");}
+    }else{printf("%s", "Posicao invalida");}
+}
+//deposita cristal
+void Put(Maquina soldier, int dir, Celula arena){
+    if(isvalid(soldier->x + movx[dir],soldier->y + movy[dir])){
+        if(soldier->cristais > 0){
+            (arena[soldier->x + movx[dir]][soldier->y + movy[dir]]).cristais ++;
+            soldier.cristais--;
+        }else{printf("%s", "Seu soldado nao tem cristais");}
+    }else{printf("%s", "Posicao invalida");}
+}
 
 //registro dos ponteiros das maquinas no vetor a[] de robos
 void registro_maquina(Maquina *m){
