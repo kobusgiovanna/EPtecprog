@@ -29,29 +29,51 @@ typedef enum {
   STL,
   RCE,
   ALC,
-  FRE
+  FRE,
+  ATR
 } OpCode;
 
-/* Tipos dos operandos */
-/* no momento, são todos inteiros */
+//Tipos dos operandos
 typedef enum {
   NUM,
   ACAO,
-  VAR
+  VAR,
+  CELULA
 } Tipo;
 
-/* Operando */
-/* typedef struct { */
-/*   Tipo t; */
-/*   union { */
-/* 	int n; */
-/* 	int ac; */
-/* 	int v; */
-/*   }; */
-/* } OPERANDO; */
-typedef int OPERANDO;
+////Tipos de terreno
+//typedef enum {
+//  ESTRADA,
+//  MONTANHA,
+//  RIO,
+//  BASE
+//} Terreno;
 
-/* Instrução */
+//Celula
+typedef struct{
+  int terreno;
+    // 0 = estrada
+    // 1 = montanha
+    // 2 = rio
+    // 3 = base
+  //se for base
+  int base;
+  short int cristais;
+  int ocupado;
+} Celula;
+
+//Operando
+typedef struct {
+  Tipo t;
+  union{
+    int n;
+    int ac;
+    int v;
+    Celula cel;
+  } val;
+} OPERANDO;
+
+//Instrução
 typedef struct {
   OpCode instr;
   OPERANDO op;

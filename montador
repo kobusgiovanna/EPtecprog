@@ -5,27 +5,50 @@ Lê, na entrada padrão, um programa na linguagem de montagem da máquina
 virtual e retorna um programa em C que executa este programa.
 
 Uso:
-    montador < entrada > saida
+    ./montador < entrada
 """
 from sys import stdin
+import sys
 
-l = stdin.readline()
+f = open("motor.c", "w")
+sys.stdout = f
+
+lines = stdin.readlines()
+
 ip = 0
-
 tabsim = {}
 
+
+for l in lines:
+    try:
+        l = l[:l.index('#')]
+    except:
+        pass
+    if l.isspace():
+        continue
+    keys = l.split()
+    if len(keys) > 0 and keys[0].endswith(":"):
+        label = keys[0][:-1]              #jogando fora o ':'
+        tabsim[label]=ip
+    ip += 1
+
+ip = 0
+
+print("#include <stdio.h>\n#include \"maq.h\" \n")
+
 print("INSTR prog[] = {")
-while l:
+for l in lines:
     label = op = ""
     arg   = 0
     try:
         l = l[:l.index('#')]
     except:
         pass
+    if len(l) == 1 or len(l) == 0:
+        print("")
+        continue
     keys = l.split()
     if len(keys) > 0 and keys[0].endswith(":"):
-        label = keys[0][:-1]              #jogando fora o ':'
-        tabsim[label]=ip
         keys.pop(0)
     if len(keys) > 0:
         op = keys.pop(0)
@@ -37,12 +60,17 @@ while l:
         print("  {%s, %s},"%(op,arg))
     else:
         print()
-    l = stdin.readline()
     ip += 1
-print("};")
-    
+print("};\n")
 
-
+print("int main(int ac, char **av) {")
+print("\tMaquina *maq = cria_maquina(prog);")
+print("\tputs(\"---\");")
+print("\texec_maquina(maq, 100000);")
+print("\tputs(\"---\");")
+print("\tdestroi_maquina(maq);")
+print("\treturn 0;")
+print("}")
 
 
 # Local variables:
