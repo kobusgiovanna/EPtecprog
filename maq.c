@@ -146,10 +146,14 @@ void InsereExercito(int x, int tropas, INSTR *p){
     }
 }
 
-//remove o exercito x --> n tropas por exercito(nessa fase iremos usar n = 5)
+//remove o exercito x da base (i,j)
 void RemoveExercito(int x){
-    for(int i = (x - 1)*5; i < (x * 5); i++)
-        destroi_maquina(a[i]);
+    for(int i = 0; i < 110; i++){
+        if(arena[a[i]->baseX][a[i] ->baseY] == x){
+            destroi_maquina(a[i]);
+            a[i] = NULL;
+        }
+    }
 }
 
 //movimenta cada maquina m (n instruções)
