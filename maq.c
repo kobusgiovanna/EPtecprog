@@ -89,7 +89,7 @@ void registro_maquina(Maquina *m){
 }
 
 
-
+//cria uma maquina m, estabelece uma coordenada nao ocupada para a mesma
 Maquina *cria_maquina(INSTR *p) {
     srand(time(NULL));
     int coordX = rand()%200;
@@ -105,6 +105,7 @@ Maquina *cria_maquina(INSTR *p) {
             m -> y = coordY;
         }while(arena[coordX][coordY].ocupado == 1);
     arena[coordX][coordY].ocupado = 1;
+    m->vida = 100;
     m->cristais = 0;
     m->ip = 0;
     m->prog = p;
@@ -129,6 +130,7 @@ void fazbase(int x,int y,int z){
 }
 
 //adiciona o x-ésimo exercito
+//vincula uma base para cada membro de exercito
 //exercito = grupo de robos/tropas
 void InsereExercito(int x, int tropas, INSTR *p){
     Maquina *maq;
@@ -143,6 +145,7 @@ void InsereExercito(int x, int tropas, INSTR *p){
         registro_maquina(maq);
     }
 }
+
 //remove o exercito x --> n tropas por exercito(nessa fase iremos usar n = 5)
 void RemoveExercito(int x){
     for(int i = (x - 1)*5; i < (x * 5); i++)
@@ -435,6 +438,7 @@ int isvalid(int x,int y){
     return 0;
 }
 
+//move a maquina até coordenada (x,y)
 void Move(Maquina *soldier, int dir, Celula arena[200][200], int n){
     if(isvalid(soldier->x + n*movx[dir],soldier->y + n*movy[dir])){
         if((arena[soldier->x + n*movx[dir]][soldier->y + n*movy[dir]]).ocupado == 0){
@@ -463,7 +467,10 @@ void Put(Maquina *soldier, int dir, Celula arena[200][200]){
         }else{printf("%s", "Seu soldado nao tem cristais");}
     }else{printf("%s", "Posicao invalida");}
 }
-
+//insere n cristais na celula (i,j)
+void PutCristal(int n, int i, int j){
+    arena[i][j].cristais += n;
+}
 
 int main(){
     return 0;
