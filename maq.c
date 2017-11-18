@@ -149,7 +149,7 @@ void InsereExercito(int x, int tropas, INSTR *p){
 //remove o exercito x da base (i,j)
 void RemoveExercito(int x){
     for(int i = 0; i < 110; i++){
-        if(arena[a[i]->baseX][a[i] ->baseY] == x){
+        if(arena[a[i]->baseX][a[i] ->baseY].base == x){
             destroi_maquina(a[i]);
             a[i] = NULL;
         }
