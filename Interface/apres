@@ -53,18 +53,27 @@ class Robo(pg.sprite.Sprite):
         s.rect = s.image.get_rect()
 
     def draw(s, i,j):
-        """
-        Desenha o robô na célula (i,j)
-        """
         x, y = convert(i,j)
 
-        # fronteiras do sprite
-        l0,h0,l1,h1 = s.rect
+        if (cristais[i][j] > 0):
+            myfont = pg.font.SysFont("monospace", 15)
 
-        # corrije a posição de acordo com o tamanho do sprite
-        s.rect.topleft = [x-l1/2,y-h1/2]
-        # desenha
-        scr.blit(s.image, s.rect)
+            # render text
+            label = myfont.render("X", 1, (0,0,0))
+            scr.blit(label, (x - 4, y + 17))
+
+        else:           
+            """
+            Desenha o robô na célula (i,j)
+            """
+
+            # fronteiras do sprite
+            l0,h0,l1,h1 = s.rect
+
+            # corrije a posição de acordo com o tamanho do sprite
+            s.rect.topleft = [x-l1/2,y-h1/2]
+            # desenha
+            scr.blit(s.image, s.rect)
 
     
 class cell:
@@ -133,16 +142,30 @@ class cell:
 
 # Construção da matriz que representa a arena
 arena = []
+# Lista dos robôs definidos
+robs = []
+# Lista de cristais
+cristais = []
+
 for i in range(15):
     arena.append([])
+    cristais.append([])
     for j in range(15):
         arena[i].append(cell(i,j))
         arena[i][j].draw()
-        # Só para testes
-        arena[i][j].cristais(random.randrange(0,3), i, j)
 
-# Lista dos robôs definidos
-robs = []
+
+        # Só para testes
+        cristais[i].append([])
+        n = random.randrange(0,3)
+        cristais[i][j] = n      
+    
+        arena[i][j].cristais(n, i, j)
+        if (random.randrange(0,2)):
+            robs.append(Robo("GILEAD_A.png"))
+            robs[i].draw(i, j)
+
+
 
 # Atualiza a janela
 atu()
