@@ -73,23 +73,3 @@ INSTR fat[] = {
     {FRE,  1},  // 19
     {RET,  0}   // 20
 };
-
-int main(int ac, char **av)
-{
-    Maquina *maq = cria_maquina(programa);
-    Maquina *maq2 = cria_maquina(fibonacci);
-    Maquina *maq3 = cria_maquina(fat);
-
-    exec_maquina(maq, 3);
-    exec_maquina(maq2, 40);
-    puts("---");
-    exec_maquina(maq, 20);
-    puts("---");
-    exec_maquina(maq2, 1000);
-    puts("---");
-    exec_maquina(maq3, 1000);
-
-    destroi_maquina(maq);
-    destroi_maquina(maq2);
-    destroi_maquina(maq3);
-}

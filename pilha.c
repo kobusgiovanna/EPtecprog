@@ -43,8 +43,16 @@ void imprime(Pilha *p, int n) {
         printf("%4d, ", p->val[i]);
     printf("]");
     return;
-}
+} 
+void empilhaint(Pilha *p, int n) {
+    if (p->topo < PILMAX){
+    OPERANDO temp;
+    temp.val.n = n;
+    p->val[p->topo++] = temp;
+    }
+    else Erro("Pilha cheia");
+}      
 
 int main(){
     return 0;
-}
+}                 

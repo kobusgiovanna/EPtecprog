@@ -12,3 +12,4 @@ void destroi_pilha(Pilha *p);
 void empilha(Pilha *p, OPERANDO op);
 OPERANDO desempilha(Pilha *p);
 void imprime(Pilha *p, int n);
+void empilhaint(Pilha *p, int n);

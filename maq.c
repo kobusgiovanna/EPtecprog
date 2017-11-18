@@ -50,35 +50,6 @@ Celula arena[200][200];
 int movx[6]={0,1,1,0,-1,-1};
 int movy[6]={-1,-1,0,1,1,0};
 
-static void Erro(char *msg) {
-    fprintf(stderr, "%s\n", msg);
-}
-
-static void Fatal(char *msg, int cod) {
-    Erro(msg);
-    exit(cod);
-}
-
-void empilhaint(Pilha *p, int n) {
-    if (p->topo < PILMAX){
-    OPERANDO temp;
-    temp.val.n = n;
-    p->val[p->topo++] = temp;
-    }
-    else Erro("Pilha cheia");
-}
-
-void empilha(Pilha *p, OPERANDO op) {
-    if (p->topo < PILMAX)
-        p->val[p->topo++] = op;
-    else Erro("Pilha cheia");
-}
-
-OPERANDO desempilha(Pilha *p) {
-    if (p->topo > 0)
-        return p->val[--p->topo];
-    else Erro("Pilha vazia");
-}
 
 //registro dos ponteiros das maquinas no vetor a[] de robos
 void registro_maquina(Maquina *m){
@@ -474,8 +445,4 @@ void Put(Maquina *soldier, int dir, Celula arena[200][200]){
 //insere n cristais na celula (i,j)
 void PutCristal(int n, int i, int j){
     arena[i][j].cristais += n;
-}
-
-int main(){
-    return 0;
 }
