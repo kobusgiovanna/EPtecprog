@@ -1,4 +1,4 @@
-#include "pilha.h"
+#include "pilha.c"
 
 #define MAXMEM 100
 

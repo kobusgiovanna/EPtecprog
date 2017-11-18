@@ -54,8 +54,8 @@ int main() {
   rb[1].vj = -1;
 
   if (display == NULL) {
-	fprintf(stderr,"Não encontrei o programa de exibição\n");
-	return 1;
+  	fprintf(stderr,"Não encontrei o programa de exibição\n");
+  	return 1;
   }
   
   /* cria dois robôs */
@@ -63,11 +63,11 @@ int main() {
 
 
   for (t=0; t < 100; t++) {
-	anda(0);
-	anda(1);
-	mostra(0);
-	mostra(1);
-	fflush(display);
+  	anda(0);
+  	anda(1);
+  	mostra(0);
+  	mostra(1);
+  	fflush(display);
   }
 
   pclose(display);

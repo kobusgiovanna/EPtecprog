@@ -42,12 +42,12 @@ typedef enum {
 } Tipo;
 
 ////Tipos de terreno
-//typedef enum {
-//  ESTRADA,
-//  MONTANHA,
-//  RIO,
-//  BASE
-//} Terreno;
+typedef enum {
+  ESTRADA,
+  MONTANHA,
+  RIO,
+  BASE
+} Terreno;
 
 //Celula
 typedef struct{

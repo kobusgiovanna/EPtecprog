@@ -43,4 +43,4 @@ void imprime(Pilha *p, int n) {
         printf("%4d, ", p->val[i]);
     printf("]");
     return;
-}                        
+}          
