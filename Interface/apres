@@ -55,17 +55,16 @@ class Robo(pg.sprite.Sprite):
     def draw(s, i,j):
         x, y = convert(i,j)
 
+
+        # Desenha um símbolo do Robo embaixo do Cristal
         if (cristais[i][j] > 0):
             myfont = pg.font.SysFont("monospace", 15)
-
             # render text
             label = myfont.render("X", 1, (0,0,0))
             scr.blit(label, (x - 4, y + 17))
 
-        else:           
-            """
-            Desenha o robô na célula (i,j)
-            """
+        # Desenha o robô na célula (i, j)
+        else:          
 
             # fronteiras do sprite
             l0,h0,l1,h1 = s.rect
@@ -140,6 +139,22 @@ class cell:
         # Desenha o número de cristais dentro do losango
         s.numero_cristais(n, x, y)
 
+    # Desenha uma base de imagem (img) na célula (i, j)
+    def base(s, img, i, j):
+        x, y = convert(i, j)
+
+        s.image = pg.image.load(img)
+        s.rect = s.image.get_rect()
+
+        # fronteiras do sprite
+        l0,h0,l1,h1 = s.rect
+
+        # corrije a posição de acordo com o tamanho do sprite
+        s.rect.topleft = [x-l1/2,y-h1/2]
+        # desenha
+        scr.blit(s.image, s.rect)
+
+
 # Construção da matriz que representa a arena
 arena = []
 # Lista dos robôs definidos
@@ -157,13 +172,25 @@ for i in range(15):
 
         # Só para testes
         cristais[i].append([])
-        n = random.randrange(0,3)
+        n = random.randrange(-1,3)
         cristais[i][j] = n      
     
         arena[i][j].cristais(n, i, j)
         if (random.randrange(0,2)):
-            robs.append(Robo("GILEAD_A.png"))
+            if (random.randrange(0,2)):
+                robs.append(Robo("GILEAD_A.png"))
+            else:
+                robs.append(Robo("GILEAD_B.png"))
+
             robs[i].draw(i, j)
+        else:
+            if (random.randrange(0,10) == 7):
+                if (cristais[i][j] < 1):
+                    if (random.randrange(0,2)):
+                        arena[i][j].base("BASE_A.png", i, j)
+                    else:
+                        arena[i][j].base("BASE_B.png", i, j)
+
 
 
 
@@ -190,6 +217,14 @@ for line in fileinput.input():
     # Argumento 3: Posição vertical na Arena
     if r[0] == "cristal":
         arena[r[2]][r[3]].cristais(r[1], r[2], r[3])
+
+
+    # comando para desenho de uma base
+    # Argumento 1: Diretório da Imagem
+    # Argumento 2: Posição horizontal na Arena
+    # Argumento 3: Posição vertical na Arena
+    if r[0] == "base":
+        arena[r[2]][r[3]].base(r[1], r[2], r[3])
 
     # linha de movimentação:
     # robô, corrdenadas originais, coordenadas finais
