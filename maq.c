@@ -43,7 +43,6 @@ char *CODES[] = {
 int tempo=0;
 //vetor que armazena cada maquina
 Maquina *a[110];
-int timestep = 0;
 Celula arena[200][200];
 
 //declaro os vetores de movimento
@@ -421,6 +420,7 @@ void Move(Maquina *soldier, int dir, Celula arena[200][200], int n){
             soldier->x = soldier->x + n*movx[dir];
             soldier->y = soldier->y + n*movx[dir];
             arena[soldier->x][soldier->y].ocupado = 1;
+            vizinhanca(soldier, x, y);
         }else {printf("%s", "A Celula ja estava ocupada");}
     }else {printf("%s", "Movimento fora dos limites da arena.");}
 }
@@ -430,6 +430,7 @@ void Retrieve(Maquina *soldier, int dir, Celula arena[200][200]){
         if((arena[soldier->x + movx[dir]][soldier->y + movy[dir]]).cristais > 0){
             (arena[soldier->x + movx[dir]][soldier->y + movy[dir]]).cristais-=1;
             soldier->cristais+=1;
+            vizinhanca(soldier, x, y);
         }else{printf("%s", "Nao ha cristal nessa posicao");}
     }else{printf("%s", "Posicao invalida");}
 }
@@ -439,6 +440,7 @@ void Put(Maquina *soldier, int dir, Celula arena[200][200]){
         if(soldier->cristais > 0){
             (arena[soldier->x + movx[dir]][soldier->y + movy[dir]]).cristais ++;
             soldier->cristais--;
+            vizinhanca(soldier, x, y);
         }else{printf("%s", "Seu soldado nao tem cristais");}
     }else{printf("%s", "Posicao invalida");}
 }
