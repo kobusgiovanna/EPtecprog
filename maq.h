@@ -7,6 +7,7 @@ typedef struct {
   Pilha exec;
   OPERANDO Mem[MAXMEM];
   INSTR *prog;
+  int id;
   int ip;
   int rbp;
   int cristais;

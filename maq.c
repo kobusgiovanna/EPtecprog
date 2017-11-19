@@ -49,6 +49,51 @@ Celula arena[200][200];
 int movx[6]={0,1,1,0,-1,-1};
 int movy[6]={-1,-1,0,1,1,0};
 
+// Comunicação com a interface gráfica
+FILE *display;
+
+void create_display(FILE * display){
+    display = popen("./apres", "w");
+}
+
+// Atualiza ou cria uma base
+// dir: prefixo do diretório
+// id : sufixo do diretório
+// x  : coordenada horizontal
+// y  : coordenada vertical
+void update_base(char * dir, int id, int x, int y){
+    fprintf(display, "base %s%d %d %d\n", dir, id, x, y);
+}
+
+// Atualiza ou cria um cristal
+// n: quantidade de cristais
+// x: coordenada horizontal
+// y: coordenada vertical
+void update_cristal(int n, int x, int y){
+    fprintf(display, "cristal %d %d %d\n", n, x, y);
+}
+
+// Atualiza a posição de um robô
+// i : quantidade de cristais
+// ox: coordenada horizontal origem
+// oy: coordenada vertical origem
+// ix: coordenada horizontal destino
+// iy: coordenada vertical destino
+void update_robot(int i, int ox, int oy, int ix, int iy){
+    fprintf(display, "%d %d %d %d %d\n", i, ox, oy, ix, iy);
+}
+
+// Cria um robô com imagem dada pelos argumentos
+void create_robot(char * dir, int id){
+    fprintf(display, "rob %s%d\n", dir, id);
+}
+
+//insere n cristais na celula (i,j)
+void PutCristal(int n, int i, int j){
+    arena[i][j].cristais += n;
+    update_cristal(arena[i][j].cristais + n, i, j);
+}
+
 
 //registro dos ponteiros das maquinas no vetor a[] de robos
 void registro_maquina(Maquina *m){
@@ -56,6 +101,7 @@ void registro_maquina(Maquina *m){
     while(a[i] != NULL)
         i++;
     a[i] = m;
+    m->id = i;
 }
 
 
@@ -84,6 +130,7 @@ Maquina *cria_maquina(INSTR *p) {
 }
 
 void destroi_maquina(Maquina *m) {
+    update_robot(m->id, m->x, m->y, -1, -1);
     free(m);
 }
 
@@ -98,6 +145,7 @@ void fazbase(int x,int y,int z){
     }
     arena[x][y].terreno = 3;
     arena[x][y].base = z;
+    update_base("BASE_", z, x, y);
 }
 
 //adiciona o x-ésimo exercito
@@ -114,6 +162,8 @@ void InsereExercito(int x, int tropas, INSTR *p){
         maq -> baseX = coordX;
         maq -> baseY = coordY;
         registro_maquina(maq);
+        create_robot("GILEAD_", maq->id);
+        update_robot(maq->id, -1, -1, coordX, coordY);
     }
 }
 
@@ -396,10 +446,14 @@ void constroi(){
             //definiremos o numero de cristais em cada posicao
             if(tipo<95)
                 arena[i][j].cristais=0;
-            else if(tipo<99)
+            else if(tipo<99){
                 arena[i][j].cristais=1;
-            else 
-                arena[i][j].cristais=2;
+                update_cristal(1, i, j);
+            }
+            else{
+                arena[i][j].cristais = 2;
+                update_cristal(2, i, j);
+            }
 
             arena[i][j].terreno=terreno;
         }
@@ -452,6 +506,8 @@ void Move(Maquina *soldier, int dir, Celula arena[200][200], int n){
             soldier->y = soldier->y + n*movx[dir];
             arena[soldier->x][soldier->y].ocupado = 1;
             vizinhanca(soldier, soldier->x, soldier->y);
+            update_robot(soldier->id, soldier->x, soldier->y, soldier->x + n*movx[dir],
+             soldier->y + n*movx[dir]);
         }else {printf("%s", "A Celula ja estava ocupada");}
     }else {printf("%s", "Movimento fora dos limites da arena.");}
 }
@@ -479,25 +535,20 @@ void Attack(Maquina *soldier, int dir, Celula arena[200][200]){
 void Retrieve(Maquina *soldier, int dir, Celula arena[200][200]){
     if(isvalid(soldier->x + movx[dir],soldier->y + movy[dir])){
         if((arena[soldier->x + movx[dir]][soldier->y + movy[dir]]).cristais > 0){
-            (arena[soldier->x + movx[dir]][soldier->y + movy[dir]]).cristais-=1;
+            PutCristal(-1, soldier->x + movx[dir], soldier->y + movy[dir]);
             soldier->cristais+=1;
             vizinhanca(soldier, soldier->x, soldier->y);
         }else{printf("%s", "Nao ha cristal nessa posicao");}
     }else{printf("%s", "Posicao invalida");}
 }
+
 //deposita cristal
 void Put(Maquina *soldier, int dir, Celula arena[200][200]){
     if(isvalid(soldier->x + movx[dir],soldier->y + movy[dir])){
         if(soldier->cristais > 0){
-            (arena[soldier->x + movx[dir]][soldier->y + movy[dir]]).cristais ++;
+            PutCristal(1, soldier->x + movx[dir], soldier->y + movy[dir]);
             soldier->cristais--;
             vizinhanca(soldier, soldier->x, soldier->y);
         }else{printf("%s", "Seu soldado nao tem cristais");}
     }else{printf("%s", "Posicao invalida");}
 }
-
-//insere n cristais na celula (i,j)
-void PutCristal(int n, int i, int j){
-    arena[i][j].cristais += n;
-}
-
