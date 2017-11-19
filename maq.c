@@ -43,7 +43,7 @@ char *CODES[] = {
 int tempo=0;
 //vetor que armazena cada maquina
 Maquina *a[110];
-Celula arena[200][200];
+Celula arena[16][16];
 
 //declaro os vetores de movimento
 int movx[6]={0,1,1,0,-1,-1};
@@ -108,15 +108,15 @@ void registro_maquina(Maquina *m){
 //cria uma maquina m, estabelece uma coordenada nao ocupada para a mesma
 Maquina *cria_maquina(INSTR *p) {
     srand(time(NULL));
-    int coordX = rand()%200;
-    int coordY = rand()%200;
+    int coordX = rand()%16;
+    int coordY = rand()%16;
     Maquina *m = (Maquina*)malloc(sizeof(Maquina));
     if (!m) Fatal("Memória insuficiente",4);
     m -> x = coordX;
     m -> y = coordY;
         do{
-            int coordX = rand()%200;
-            int coordY = rand()%200;
+            int coordX = rand()%16;
+            int coordY = rand()%16;
             m -> x = coordX;
             m -> y = coordY;
         }while(arena[coordX][coordY].ocupado == 1);
@@ -138,8 +138,8 @@ void destroi_maquina(Maquina *m) {
 void fazbase(int x,int y,int z){
     while(arena[x][y].ocupado == 1 || arena[x][y].base != 0){
         srand(time(NULL));
-        int coordX = rand()%200;
-        int coordY = rand()%200;
+        int coordX = rand()%16;
+        int coordY = rand()%16;
         x = coordX;
         y = coordY;
     }
@@ -154,8 +154,8 @@ void fazbase(int x,int y,int z){
 void InsereExercito(int x, int tropas, INSTR *p){
     Maquina *maq;
     srand(time(NULL));
-    int coordX = rand()%200;
-    int coordY = rand()%200;
+    int coordX = rand()%16;
+    int coordY = rand()%16;
     fazbase(coordX, coordY, x);
     for(int j = 0; j < tropas; j++){
         maq = cria_maquina(p);
@@ -425,8 +425,8 @@ void constroi(){
     double probMONTANHA=40;
     double probRIO=20;
 
-    for(int i=0;i<200;i++){
-        for(int j=0;j<200;j++){
+    for(int i=0;i<16;i++){
+        for(int j=0;j<16;j++){
             //nao há robos nem bases na inicialização
             arena[i][j].ocupado = 0;
             arena[i][j].base = 0;
@@ -493,13 +493,13 @@ void vizinhanca(Maquina *m ,int i, int j){
 //movimentar os robos
 // 0=N,1=NE,2=SE,3=S,4=SW,5=NW
 int isvalid(int x,int y){
-    if(x>=0 && y>=0 && x<200 && y<200)return 1;
+    if(x>=0 && y>=0 && x<16 && y<16)return 1;
     return 0;
 }
 
 //move a maquina até coordenada (x,y)
-void Move(Maquina *soldier, int dir, Celula arena[200][200], int n){
-    if(isvalid(soldier->x + n*movx[dir],soldier->y + n*movy[dir])){
+void Move(Maquina *soldier, int dir, Celula arena[16][16], int n){
+    if(isvalid(soldier->x + n*movx[dir],soldier->y + n*movy[dir])==1){
         if((arena[soldier->x + n*movx[dir]][soldier->y + n*movy[dir]]).ocupado == 0){
             arena[soldier->x][soldier->y].ocupado = 0;
             soldier->x = soldier->x + n*movx[dir];
@@ -507,14 +507,14 @@ void Move(Maquina *soldier, int dir, Celula arena[200][200], int n){
             arena[soldier->x][soldier->y].ocupado = 1;
             vizinhanca(soldier, soldier->x, soldier->y);
             update_robot(soldier->id, soldier->x, soldier->y, soldier->x + n*movx[dir],
-             soldier->y + n*movx[dir]);
+             soldier->y + n*movy[dir]);
         }else {printf("%s", "A Celula ja estava ocupada");}
     }else {printf("%s", "Movimento fora dos limites da arena.");}
 }
 
 //ataca a maquina localizada na coordenada (x,y)
-void Attack(Maquina *soldier, int dir, Celula arena[200][200]){
-    if(isvalid(soldier->x + movx[dir],soldier->y + movy[dir])){
+void Attack(Maquina *soldier, int dir, Celula arena[16][16]){
+    if(isvalid(soldier->x + movx[dir],soldier->y + movy[dir])==1){
         if((arena[soldier->x + movx[dir]][soldier->y + movy[dir]]).ocupado == 1){
             int posx=soldier->x + movx[dir];
             int posy=soldier->y + movy[dir];
@@ -532,8 +532,8 @@ void Attack(Maquina *soldier, int dir, Celula arena[200][200]){
 }
 
 //recolhe cristal
-void Retrieve(Maquina *soldier, int dir, Celula arena[200][200]){
-    if(isvalid(soldier->x + movx[dir],soldier->y + movy[dir])){
+void Retrieve(Maquina *soldier, int dir, Celula arena[16][16]){
+    if(isvalid(soldier->x + movx[dir],soldier->y + movy[dir])==1){
         if((arena[soldier->x + movx[dir]][soldier->y + movy[dir]]).cristais > 0){
             PutCristal(-1, soldier->x + movx[dir], soldier->y + movy[dir]);
             soldier->cristais+=1;
@@ -543,8 +543,8 @@ void Retrieve(Maquina *soldier, int dir, Celula arena[200][200]){
 }
 
 //deposita cristal
-void Put(Maquina *soldier, int dir, Celula arena[200][200]){
-    if(isvalid(soldier->x + movx[dir],soldier->y + movy[dir])){
+void Put(Maquina *soldier, int dir, Celula arena[16][16]){
+    if(isvalid(soldier->x + movx[dir],soldier->y + movy[dir])==1){
         if(soldier->cristais > 0){
             PutCristal(1, soldier->x + movx[dir], soldier->y + movy[dir]);
             soldier->cristais--;
