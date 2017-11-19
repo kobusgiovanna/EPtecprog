@@ -442,7 +442,40 @@ void Put(Maquina *soldier, int dir, Celula arena[200][200]){
         }else{printf("%s", "Seu soldado nao tem cristais");}
     }else{printf("%s", "Posicao invalida");}
 }
+
+//verifica os arredores da celula (i,j)
+void vizinhanca(Maquina *m ,int i, int j){
+    int x = i;
+    int y = j;
+    for(int i = 0; i < 6; i++){
+        x += movx[i];
+        y += movy[i];
+        //verifica se ha cristais
+        if(arena[x][y].cristais > 0){
+            m->proxPosition.cristais[i] = arena[x][y].cristais;
+        }else
+            m->proxPosition.cristais[i] = 0;
+        //verifica se há bases (0 -> sem base)
+        if(arena[x][y].base > 0){
+            m->proxPosition.bases[i] = arena[x][y].base;
+        }else
+            m->proxPosition.bases[i] = 0;
+        //verifica se há maquinas
+        if(arena[x][y].ocupado > 0){
+            if(arena[x][y].base == arena[i][j].base)
+                m->proxPosition.amigos[i] = 1;
+            else
+                m->proxPosition.inimigos[i] = 1;
+        }else{
+            m->proxPosition.amigos[i] = 0;
+            m->proxPosition.inimigos[i] = 0;
+        }
+        
+    }
+}
+
 //insere n cristais na celula (i,j)
 void PutCristal(int n, int i, int j){
     arena[i][j].cristais += n;
 }
+

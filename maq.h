@@ -13,6 +13,12 @@ typedef struct {
   int x, y;
   int baseX, baseY;
   int vida;
+    union{
+        int cristais[6];
+        int bases[6];
+        int amigos[6];
+        int inimigos[6];
+    }proxPosition;
 } Maquina;
 
 Maquina *cria_maquina(INSTR *p);
