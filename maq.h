@@ -13,6 +13,7 @@ typedef struct {
   int x, y;
   int baseX, baseY;
   int vida;
+  int ataque;
     union{
         int cristais[6];
         int bases[6];

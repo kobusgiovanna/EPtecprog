@@ -75,6 +75,7 @@ Maquina *cria_maquina(INSTR *p) {
             m -> y = coordY;
         }while(arena[coordX][coordY].ocupado == 1);
     arena[coordX][coordY].ocupado = 1;
+    m->ataque = 30;
     m->vida = 100;
     m->cristais = 0;
     m->ip = 0;
@@ -405,7 +406,7 @@ void constroi(){
     }
 }
 
-//verifica os arredores da celula (x,y)
+//verifica os arredores da celula (i,j)
 void vizinhanca(Maquina *m ,int i, int j){
     for(int k = 0; k < 6; k++){
         int x = i+movx[k];
@@ -454,6 +455,33 @@ void Move(Maquina *soldier, int dir, Celula arena[200][200], int n){
         }else {printf("%s", "A Celula ja estava ocupada");}
     }else {printf("%s", "Movimento fora dos limites da arena.");}
 }
+
+//ataca a maquina localizada na coordenada (x,y)
+void Attack(Maquina *soldier, int dir, Celula arena[200][200], int n){
+    if(isvalid(soldier->x + n*movx[dir],soldier->y + n*movy[dir])){
+        if((arena[soldier->x + n*movx[dir]][soldier->y + n*movy[dir]]).ocupado == 1){
+            for(int i = 0; i < 110; i++)
+                if(a[i]->x == soldier->x + n*movx[dir] && a[i]->y == soldier->y + n*movy[dir]){
+                    a[i]->vida -= soldier->ataque;
+                    soldier->vida -= a[i]->ataque;
+                    if(a[i]->vida <= 0){
+                        destroi_maquina(a[i]);
+                        a[i] = NULL;
+                        Move(soldier, dir, arena, n);
+                        break;
+                    }
+                    if(soldier->vida <= 0){
+                        for(int i = 0; i < 110; i++)
+                            if(a[i]->x == soldier->x && a[i]->y == soldier->y)
+                                a[i] = NULL;
+                        destroi_maquina(soldier);
+                    }
+                        
+                }
+        }else {printf("%s", "Nenhum robô nesse local");}
+    }else {printf("%s", "Movimento fora dos limites da arena.");}
+}
+
 //recolhe cristal
 void Retrieve(Maquina *soldier, int dir, Celula arena[200][200]){
     if(isvalid(soldier->x + movx[dir],soldier->y + movy[dir])){
