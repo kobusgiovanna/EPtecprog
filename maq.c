@@ -522,9 +522,16 @@ void Attack(Maquina *soldier, int dir, Celula arena[16][16]){
                 if(a[i]!=NULL && a[i]->x == posx && a[i]->y == posy){
                     a[i]->vida -= soldier->ataque;
                     if(a[i]->vida <= 0){
+                        soldier->cristais+=a[i]->cristais;
                         destroi_maquina(a[i]);
                         a[i] = NULL;
                         break;
+                    }
+                    else{
+                        if(a[i]->cristais>0){
+                            a[i]->cristais--;
+                            soldier->cristais++;
+                        }
                     }   
                 }
         }else {printf("%s", "Nenhum robô nesse local");}
