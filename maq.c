@@ -420,7 +420,7 @@ void Move(Maquina *soldier, int dir, Celula arena[200][200], int n){
             soldier->x = soldier->x + n*movx[dir];
             soldier->y = soldier->y + n*movx[dir];
             arena[soldier->x][soldier->y].ocupado = 1;
-            vizinhanca(soldier, x, y);
+            vizinhanca(soldier, soldier->x, soldier->y);
         }else {printf("%s", "A Celula ja estava ocupada");}
     }else {printf("%s", "Movimento fora dos limites da arena.");}
 }
@@ -430,7 +430,7 @@ void Retrieve(Maquina *soldier, int dir, Celula arena[200][200]){
         if((arena[soldier->x + movx[dir]][soldier->y + movy[dir]]).cristais > 0){
             (arena[soldier->x + movx[dir]][soldier->y + movy[dir]]).cristais-=1;
             soldier->cristais+=1;
-            vizinhanca(soldier, x, y);
+            vizinhanca(soldier, soldier->x, soldier->y);
         }else{printf("%s", "Nao ha cristal nessa posicao");}
     }else{printf("%s", "Posicao invalida");}
 }
@@ -440,37 +440,35 @@ void Put(Maquina *soldier, int dir, Celula arena[200][200]){
         if(soldier->cristais > 0){
             (arena[soldier->x + movx[dir]][soldier->y + movy[dir]]).cristais ++;
             soldier->cristais--;
-            vizinhanca(soldier, x, y);
+            vizinhanca(soldier, soldier->x, soldier->y);
         }else{printf("%s", "Seu soldado nao tem cristais");}
     }else{printf("%s", "Posicao invalida");}
 }
 
-//verifica os arredores da celula (i,j)
+//verifica os arredores da celula (x,y)
 void vizinhanca(Maquina *m ,int i, int j){
-    int x = i;
-    int y = j;
-    for(int i = 0; i < 6; i++){
-        x += movx[i];
-        y += movy[i];
+    for(int k = 0; k < 6; k++){
+        int x = i+movx[k];
+        int y = j+movy[k];
         //verifica se ha cristais
         if(arena[x][y].cristais > 0){
-            m->proxPosition.cristais[i] = arena[x][y].cristais;
+            m->proxPosition.cristais[k] = arena[x][y].cristais;
         }else
-            m->proxPosition.cristais[i] = 0;
+            m->proxPosition.cristais[k] = 0;
         //verifica se há bases (0 -> sem base)
         if(arena[x][y].base > 0){
-            m->proxPosition.bases[i] = arena[x][y].base;
+            m->proxPosition.bases[k] = arena[x][y].base;
         }else
-            m->proxPosition.bases[i] = 0;
+            m->proxPosition.bases[k] = 0;
         //verifica se há maquinas
         if(arena[x][y].ocupado > 0){
             if(arena[x][y].base == arena[i][j].base)
-                m->proxPosition.amigos[i] = 1;
+                m->proxPosition.amigos[k] = 1;
             else
-                m->proxPosition.inimigos[i] = 1;
+                m->proxPosition.inimigos[k] = 1;
         }else{
-            m->proxPosition.amigos[i] = 0;
-            m->proxPosition.inimigos[i] = 0;
+            m->proxPosition.amigos[k] = 0;
+            m->proxPosition.inimigos[k] = 0;
         }
         
     }
