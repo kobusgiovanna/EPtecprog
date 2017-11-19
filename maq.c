@@ -413,23 +413,23 @@ void vizinhanca(Maquina *m ,int i, int j){
         int y = j+movy[k];
         //verifica se ha cristais
         if(arena[x][y].cristais > 0){
-            m->proxPosition.cristais[k] = arena[x][y].cristais;
+            m->vizi_cristais[k] = arena[x][y].cristais;
         }else
-            m->proxPosition.cristais[k] = 0;
+            m->vizi_cristais[k] = 0;
         //verifica se há bases (0 -> sem base)
         if(arena[x][y].base > 0){
-            m->proxPosition.bases[k] = arena[x][y].base;
+            m->vizi_bases[k] = arena[x][y].base;
         }else
-            m->proxPosition.bases[k] = 0;
+            m->vizi_bases[k] = 0;
         //verifica se há maquinas
         if(arena[x][y].ocupado > 0){
             if(arena[x][y].base == arena[i][j].base)
-                m->proxPosition.amigos[k] = 1;
+                m->vizi_amigos[k] = 1;
             else
-                m->proxPosition.inimigos[k] = 1;
+                m->vizi_inimigos[k] = 1;
         }else{
-            m->proxPosition.amigos[k] = 0;
-            m->proxPosition.inimigos[k] = 0;
+            m->vizi_amigos[k] = 0;
+            m->vizi_inimigos[k] = 0;
         }
         
     }
