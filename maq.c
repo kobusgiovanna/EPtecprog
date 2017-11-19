@@ -457,26 +457,19 @@ void Move(Maquina *soldier, int dir, Celula arena[200][200], int n){
 }
 
 //ataca a maquina localizada na coordenada (x,y)
-void Attack(Maquina *soldier, int dir, Celula arena[200][200], int n){
-    if(isvalid(soldier->x + n*movx[dir],soldier->y + n*movy[dir])){
-        if((arena[soldier->x + n*movx[dir]][soldier->y + n*movy[dir]]).ocupado == 1){
+void Attack(Maquina *soldier, int dir, Celula arena[200][200]){
+    if(isvalid(soldier->x + movx[dir],soldier->y + movy[dir])){
+        if((arena[soldier->x + movx[dir]][soldier->y + movy[dir]]).ocupado == 1){
+            int posx=soldier->x + movx[dir];
+            int posy=soldier->y + movy[dir];
             for(int i = 0; i < 110; i++)
-                if(a[i]->x == soldier->x + n*movx[dir] && a[i]->y == soldier->y + n*movy[dir]){
+                if(a[i]!=NULL && a[i]->x == posx && a[i]->y == posy){
                     a[i]->vida -= soldier->ataque;
-                    soldier->vida -= a[i]->ataque;
                     if(a[i]->vida <= 0){
                         destroi_maquina(a[i]);
                         a[i] = NULL;
-                        Move(soldier, dir, arena, n);
                         break;
-                    }
-                    if(soldier->vida <= 0){
-                        for(int i = 0; i < 110; i++)
-                            if(a[i]->x == soldier->x && a[i]->y == soldier->y)
-                                a[i] = NULL;
-                        destroi_maquina(soldier);
-                    }
-                        
+                    }   
                 }
         }else {printf("%s", "Nenhum robô nesse local");}
     }else {printf("%s", "Movimento fora dos limites da arena.");}
