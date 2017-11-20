@@ -53,7 +53,3 @@ void empilhaint(Pilha *p, int n) {
     }
     else Erro("Pilha cheia");
 }      
-
-int main(){
-    return 0;
-}                 

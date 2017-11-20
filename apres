@@ -184,14 +184,13 @@ atu()
 # Leitura dos comandos pela entrada padrão ou de um arquivo
 for line in fileinput.input():
     r = line.split()
-    pymsgbox.alert("PORRA", "Title");
+    
     # linha começando com 'fim', termina o programa
     if r[0] == 'fim':
         break
     # linha começando com 'rob', inclui um robô,
     # o segundo argumento na linha é a imagem   
     if r[0] == 'rob':
-
         robs.append(Robo(r[1]))
         atu()
         continue
@@ -206,7 +205,6 @@ for line in fileinput.input():
         cristais[r2][r3] = r1
         atu()
         continue
-
 
     # comando para desenho de uma base
     # Argumento 1: Diretório da Imagem
@@ -228,7 +226,6 @@ for line in fileinput.input():
     # desenha o robô na célula de destino
     if 0 <= di  < W and 0 <= dj < H and ri < len(robs):
         robs[ri].draw(di,dj)
-
     # tempo de espera para atualização, apenas para testes
     pg.time.wait(100)
 

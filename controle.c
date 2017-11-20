@@ -86,7 +86,6 @@ int main() {
 
 
   for (t=0; t < 100; t++) {
-    printf("4");
     anda(0);
     anda(1);
     mostra(0);

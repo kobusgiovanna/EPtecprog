@@ -2,6 +2,8 @@
 
 #define MAXMEM 100
 
+FILE * display;
+
 typedef struct {
   Pilha pil;
   Pilha exec;
@@ -27,3 +29,5 @@ Maquina *cria_maquina(INSTR *p);
 void destroi_maquina(Maquina *m);
 
 void exec_maquina(Maquina *m, int n);
+
+FILE * create_display();
