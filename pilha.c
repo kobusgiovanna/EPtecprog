@@ -52,4 +52,9 @@ void empilhaint(Pilha *p, int n) {
     p->val[p->topo++] = temp;
     }
     else Erro("Pilha cheia");
-}      
+}
+
+
+int main(){
+    return 0;
+}

@@ -466,11 +466,22 @@ void constroi(){
     }
 }
 
-//verifica os arredores da celula (i,j)
-void vizinhanca(Maquina *m ,int i, int j){
+//system calls
+//movimentar os robos
+// 0=N,1=NE,2=SE,3=S,4=SW,5=NW
+int isvalid(int x,int y){
+    if(x>=0 && y>=0 && x<15 && y<15)return 1;
+    return 0;
+}
+
+//verifica os arredores do robo
+void vizinhanca(Maquina *m){
+    int i=m->x;
+    int j=m->y;
     for(int k = 0; k < 6; k++){
         int x = i+movx[k];
         int y = j+movy[k];
+        if(isvalid(x,y)==0)continue;
         //verifica se ha cristais
         if(arena[x][y].cristais > 0){
             m->vizi_cristais[k] = arena[x][y].cristais;
@@ -495,23 +506,15 @@ void vizinhanca(Maquina *m ,int i, int j){
     }
 }
 
-//system calls
-//movimentar os robos
-// 0=N,1=NE,2=SE,3=S,4=SW,5=NW
-int isvalid(int x,int y){
-    if(x>=0 && y>=0 && x<15 && y<15)return 1;
-    return 0;
-}
-
 //move a maquina até coordenada (x,y)
-void Move(Maquina *soldier, int dir, Celula arena[15][15], int n){
+void Move(Maquina *soldier, int dir, int n){
     if(isvalid(soldier->x + n*movx[dir],soldier->y + n*movy[dir])==1){
         if((arena[soldier->x + n*movx[dir]][soldier->y + n*movy[dir]]).ocupado == 0){
             arena[soldier->x][soldier->y].ocupado = 0;
             soldier->x = soldier->x + n*movx[dir];
             soldier->y = soldier->y + n*movx[dir];
             arena[soldier->x][soldier->y].ocupado = 1;
-            vizinhanca(soldier, soldier->x, soldier->y);
+            vizinhanca(soldier);
             update_robot(soldier->id, soldier->x, soldier->y, soldier->x + n*movx[dir],
              soldier->y + n*movy[dir]);
         }else {printf("%s", "A Celula ja estava ocupada");}
@@ -545,31 +548,33 @@ void Attack(Maquina *soldier, int dir, Celula arena[15][15]){
 }
 
 //recolhe cristal
-void Retrieve(Maquina *soldier, int dir, Celula arena[15][15]){
+void Retrieve(Maquina *soldier, int dir){
     if(isvalid(soldier->x + movx[dir],soldier->y + movy[dir])==1){
         if((arena[soldier->x + movx[dir]][soldier->y + movy[dir]]).cristais > 0){
             PutCristal(-1, soldier->x + movx[dir], soldier->y + movy[dir]);
             soldier->cristais+=1;
-            vizinhanca(soldier, soldier->x, soldier->y);
+            vizinhanca(soldier);
         }else{printf("%s", "Nao ha cristal nessa posicao");}
     }else{printf("%s", "Posicao invalida");}
 }
 
 //deposita cristal
-void Put(Maquina *soldier, int dir, Celula arena[15][15]){
+void Put(Maquina *soldier, int dir){
     if(isvalid(soldier->x + movx[dir],soldier->y + movy[dir])==1){
         if(soldier->cristais > 0){
             PutCristal(1, soldier->x + movx[dir], soldier->y + movy[dir]);
             soldier->cristais--;
-            vizinhanca(soldier, soldier->x, soldier->y);
+            vizinhanca(soldier);
         }else{printf("%s", "Seu soldado nao tem cristais");}
     }else{printf("%s", "Posicao invalida");}
 }
 
-int main(){
+//pequena main para testes, descomentar para usa-la
+
+/*int main(){
     display = create_display();
     constroi();
     InsereExercito(0, 1, NULL);
-    Move(a[0], 2, arena, 1);
+    Move(a[0], 2, 1);
     getchar();
-}
+}*/
