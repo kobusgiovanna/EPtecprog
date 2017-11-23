@@ -1,4 +1,8 @@
-#include "pilha.c"
+#ifndef MAQ_H
+#define MAQ_H
+
+
+#include "pilha.h"
 
 #define MAXMEM 100
 
@@ -31,3 +35,5 @@ void destroi_maquina(Maquina *m);
 void exec_maquina(Maquina *m, int n);
 
 FILE * create_display();
+
+#endif

@@ -6,7 +6,10 @@ import os
 import stat
 import random as random
 
-import tkinter
+try:
+    from Tkinter import *  
+except ImportError:
+    from tkinter import *
 import pymsgbox
 
 

@@ -517,13 +517,17 @@ void Move(Maquina *soldier, int dir, int n){
             vizinhanca(soldier);
             update_robot(soldier->id, soldier->x, soldier->y, soldier->x + n*movx[dir],
              soldier->y + n*movy[dir]);
-        }else {printf("%s", "A Celula ja estava ocupada");}
-    }else {printf("%s", "Movimento fora dos limites da arena.");}
+            printf("Soldado moveu para %d %d \n",(soldier->x + movx[dir]),
+                (soldier->y + movy[dir]));
+        }else {printf("%s", "A Celula ja estava ocupada\n");}
+    }else {printf("%s", "Movimento fora dos limites da arena.\n");}
 }
 
 //ataca a maquina localizada na coordenada (x,y)
 void Attack(Maquina *soldier, int dir, Celula arena[15][15]){
     if(isvalid(soldier->x + movx[dir],soldier->y + movy[dir])==1){
+        printf("Batalha acontecendo em %d %d \n",(soldier->x + movx[dir]),
+            (soldier->y + movy[dir]));
         if((arena[soldier->x + movx[dir]][soldier->y + movy[dir]]).ocupado == 1){
             int posx=soldier->x + movx[dir];
             int posy=soldier->y + movy[dir];
@@ -543,8 +547,8 @@ void Attack(Maquina *soldier, int dir, Celula arena[15][15]){
                         }
                     }   
                 }
-        }else {printf("%s", "Nenhum robô nesse local");}
-    }else {printf("%s", "Movimento fora dos limites da arena.");}
+        }else {printf("%s", "Nenhum robô nesse local\n");}
+    }else {printf("%s", "Movimento fora dos limites da arena.\n");}
 }
 
 //recolhe cristal
@@ -554,8 +558,10 @@ void Retrieve(Maquina *soldier, int dir){
             PutCristal(-1, soldier->x + movx[dir], soldier->y + movy[dir]);
             soldier->cristais+=1;
             vizinhanca(soldier);
-        }else{printf("%s", "Nao ha cristal nessa posicao");}
-    }else{printf("%s", "Posicao invalida");}
+            printf("Cristal pegado de %d %d \n",(soldier->x + movx[dir]),
+                (soldier->y + movy[dir]));
+        }else{printf("%s", "Nao ha cristal nessa posicao\n");}
+    }else{printf("%s", "Posicao invalida\n");}
 }
 
 //deposita cristal
@@ -565,16 +571,24 @@ void Put(Maquina *soldier, int dir){
             PutCristal(1, soldier->x + movx[dir], soldier->y + movy[dir]);
             soldier->cristais--;
             vizinhanca(soldier);
-        }else{printf("%s", "Seu soldado nao tem cristais");}
-    }else{printf("%s", "Posicao invalida");}
+            printf("Cristal depositado em %d %d \n",(soldier->x + movx[dir]),
+                (soldier->y + movy[dir]));
+        }else{printf("%s", "Seu soldado nao tem cristais\n");}
+    }else{printf("%s", "Posicao invalida\n");}
 }
 
-//pequena main para testes, descomentar para usa-la
+//pequena main para testes
 
-/*int main(){
+int main(){
     display = create_display();
     constroi();
     InsereExercito(0, 1, NULL);
     Move(a[0], 2, 1);
+    Retrieve(a[0],1);
+    Move(a[0], 0, 5);
+    Retrieve(a[0],1);
+    Move(a[0], 3, 2);
+    Retrieve(a[0],1);
+    Put(a[0],5);
     getchar();
-}*/
+}
