@@ -6,11 +6,9 @@ import os
 import stat
 import random as random
 
-try:
-    from Tkinter import *  
-except ImportError:
-    from tkinter import *
-import pymsgbox
+# Só para debug
+# import tkinter
+# import pymsgbox
 
 
 st = os.stat('apres')
@@ -59,9 +57,8 @@ class Robo(pg.sprite.Sprite):
         s.image = pg.image.load(img)
         s.rect = s.image.get_rect()
 
-    def draw(s, i,j):
+    def draw(s, i, j):
         x, y = convert(i,j)
-
         # Desenha um símbolo do Robo embaixo do Cristal
         if (cristais[i][j] > 0):
             myfont = pg.font.SysFont("monospace", 15)
@@ -89,6 +86,8 @@ class cell:
         """
         Construtor, i e j formam a coordenada
         """
+        # Posições no tabuleiro
+        s.i, s.j = i, j
         # Posição do centro
         s.cx, s.cy = convert(i,j)
         # Cor (pode ser passada para o construtor no futuro)
@@ -113,22 +112,22 @@ class cell:
 
 
     # Responsável por desenhar um label dentro dum losango numa célula
-    def numero_cristais(s, n, x, y):
+    def numero_cristais(s, n):
         myfont = pg.font.SysFont("monospace", 15)
-
+        x, y = s.cx, s.cy
         # render text
         label = myfont.render("%d" % n, 1, (255,255,255))
         scr.blit(label, (x - 4, y - 6))
 
     # Responsável por adicionar um cristal numa célula
-    def cristais(s, n, i, j):
+    def cristais(s, n):
         
         # Não desenha o cristal se a quantidade é zero
         if (n < 1):
             return;
 
         # Coordenadas em pixels    
-        x, y = convert(i, j)         
+        x, y = s.cx, s.cy        
 
         # Vértices do losango
         pontos = (
@@ -144,11 +143,11 @@ class cell:
         pg.draw.lines(scr, (0,0,0), True, pontos, 2)
 
         # Desenha o número de cristais dentro do losango
-        s.numero_cristais(n, x, y)
+        s.numero_cristais(n)
 
     # Desenha uma base de imagem (img) na célula (i, j)
-    def base(s, img, i, j):
-        x, y = convert(i, j)
+    def base(s, img):
+        x, y = s.cx, s.cy
 
         s.image = pg.image.load(img)
         s.rect = s.image.get_rect()
@@ -203,8 +202,8 @@ for line in fileinput.input():
     # Argumento 2: Posição horizontal na Arena
     # Argumento 3: Posição vertical na Arena
     if r[0] == "cristal":
-        r1 = int(r[1]); r2 = int(r[2]); r3 = int(r[3])
-        arena[r2][r3].cristais(r1, r2, r3)
+        r1, r2, r3 = int(r[1]), int(r[2]), int(r[3])
+        arena[r2][r3].cristais(int(r[1]))
         cristais[r2][r3] = r1
         atu()
         continue
@@ -214,8 +213,8 @@ for line in fileinput.input():
     # Argumento 2: Posição horizontal na Arena
     # Argumento 3: Posição vertical na Arena
     if r[0] == "base":
-        r2 = int(r[2]); r3 = int(r[3])
-        arena[r2][r3].base(r[1], r2, r3)
+        r2, r3 = int(r[2]), int(r[3])
+        arena[r2][r3].base(r[1])
         atu();
         continue
 
@@ -226,11 +225,12 @@ for line in fileinput.input():
     # redesenha a célula original (apaga o robô)
     if 0 <= oi  < W and 0 <= oj < H:
         arena[oi][oj].draw()
+        arena[oi][oj].cristais(cristais[oi][oj])
     # desenha o robô na célula de destino
     if 0 <= di  < W and 0 <= dj < H and ri < len(robs):
         robs[ri].draw(di,dj)
     # tempo de espera para atualização, apenas para testes
-    pg.time.wait(100)
+    pg.time.delay(480)
 
     atu()
 

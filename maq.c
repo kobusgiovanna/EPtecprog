@@ -511,12 +511,12 @@ void Move(Maquina *soldier, int dir, int n){
     if(isvalid(soldier->x + n*movx[dir],soldier->y + n*movy[dir])==1){
         if((arena[soldier->x + n*movx[dir]][soldier->y + n*movy[dir]]).ocupado == 0){
             arena[soldier->x][soldier->y].ocupado = 0;
-            soldier->x = soldier->x + n*movx[dir];
-            soldier->y = soldier->y + n*movx[dir];
-            arena[soldier->x][soldier->y].ocupado = 1;
-            vizinhanca(soldier);
             update_robot(soldier->id, soldier->x, soldier->y, soldier->x + n*movx[dir],
              soldier->y + n*movy[dir]);
+            soldier->x = soldier->x + n*movx[dir];
+            soldier->y = soldier->y + n*movy[dir];
+            arena[soldier->x][soldier->y].ocupado = 1;
+            vizinhanca(soldier);
             printf("Soldado moveu para %d %d \n",(soldier->x + movx[dir]),
                 (soldier->y + movy[dir]));
         }else {printf("%s", "A Celula ja estava ocupada\n");}
