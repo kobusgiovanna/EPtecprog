@@ -157,18 +157,18 @@ void fazbase(int x,int y,int z){
 //vincula uma base para cada membro de exercito
 //exercito = grupo de robos/tropas
 void InsereExercito(int x, int tropas, INSTR *p){
-    Maquina *maq;
+    Maquina *maq[tropas];
     srand(time(NULL));
     int coordX = rand()%15;
     int coordY = rand()%15;
     fazbase(coordX, coordY, x);
     for(int j = 0; j < tropas; j++){
-        maq = cria_maquina(p);
-        maq -> baseX = coordX;
-        maq -> baseY = coordY;
-        registro_maquina(maq);
+        maq[j] = cria_maquina(p);
+        maq[j] -> baseX = coordX;
+        maq[j] -> baseY = coordY;
+        registro_maquina(maq[j]);
         create_robot("GILEAD_", x);
-        update_robot(maq->id, -1, -1, maq->x, maq->y);   
+        update_robot(maq[j]->id, -1, -1, maq[j]->x, maq[j]->y);
     }
 
 }
