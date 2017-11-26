@@ -168,7 +168,7 @@ void InsereExercito(int x, int tropas, INSTR *p){
         maq -> baseY = coordY;
         registro_maquina(maq);
         create_robot("GILEAD_", x);
-        update_robot(maq->id, -1, -1, maq->x, maq->y);
+        update_robot(maq->id, -1, -1, maq->x, maq->y);   
     }
 
 }
@@ -524,7 +524,7 @@ void Move(Maquina *soldier, int dir, int n){
 }
 
 //ataca a maquina localizada na coordenada (x,y)
-void Attack(Maquina *soldier, int dir, Celula arena[15][15]){
+void Attack(Maquina *soldier, int dir){
     if(isvalid(soldier->x + movx[dir],soldier->y + movy[dir])==1){
         printf("Batalha acontecendo em %d %d \n",(soldier->x + movx[dir]),
             (soldier->y + movy[dir]));
@@ -580,15 +580,20 @@ void Put(Maquina *soldier, int dir){
 //pequena main para testes
 
 int main(){
+    printf("TESTE");
     display = create_display();
     constroi();
     InsereExercito(0, 1, NULL);
+    InsereExercito(1, 1, NULL);
+    InsereExercito(2, 3, NULL);
     Move(a[0], 2, 1);
     Retrieve(a[0],1);
     Move(a[0], 0, 5);
     Retrieve(a[0],1);
     Move(a[0], 3, 2);
     Retrieve(a[0],1);
+    Move(a[1], 3, 2);
+    Retrieve(a[1],1);
     Put(a[0],5);
     getchar();
 }

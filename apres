@@ -7,8 +7,8 @@ import stat
 import random as random
 
 # Só para debug
-# import tkinter
-# import pymsgbox
+#import tkinter
+#import pymsgbox
 
 
 st = os.stat('apres')
@@ -190,12 +190,6 @@ for line in fileinput.input():
     # linha começando com 'fim', termina o programa
     if r[0] == 'fim':
         break
-    # linha começando com 'rob', inclui um robô,
-    # o segundo argumento na linha é a imagem   
-    if r[0] == 'rob':
-        robs.append(Robo(r[1]))
-        atu()
-        continue
 
     # comando para adição de cristais
     # Argumento 1: Quantidade
@@ -218,21 +212,29 @@ for line in fileinput.input():
         atu();
         continue
 
+    # linha começando com 'rob', inclui um robô,
+    # o segundo argumento na linha é a imagem   
+    if r[0] == 'rob':
+        robs.append(Robo(r[1]))
+        continue
+
     # linha de movimentação:
     # robô, corrdenadas originais, coordenadas finais
     ri, oi, oj, di, dj = list(map(int, r))
-
+    
     # redesenha a célula original (apaga o robô)
     if 0 <= oi  < W and 0 <= oj < H:
         arena[oi][oj].draw()
         arena[oi][oj].cristais(cristais[oi][oj])
+
     # desenha o robô na célula de destino
     if 0 <= di  < W and 0 <= dj < H and ri < len(robs):
         robs[ri].draw(di,dj)
-    # tempo de espera para atualização, apenas para testes
-    pg.time.delay(480)
 
-    atu()
+    # tempo de espera para atualização, apenas para testes
+    pg.time.delay(400)
+
+    atu()    
 
 pg.quit()
 # Local variables:
