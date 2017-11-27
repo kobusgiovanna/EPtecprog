@@ -42,7 +42,7 @@ void mostra(int ri) {
 /* Programa simples para mostrar como controlar a arena */
 int main() {
   int t;            /* tempo */
-  display = popen("./apres", "r");
+  display = popen("python3 apres", "r");
 
   rb[0].pi =  6;
   rb[0].pj = 14;
