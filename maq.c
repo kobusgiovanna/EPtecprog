@@ -42,7 +42,9 @@ char *CODES[] = {
 
 int tempo=0;
 //vetor que armazena cada maquina
-Maquina *a[110];
+Maquina *a[1000];
+//vetor que armazena os pares (x,y) das bases
+int bases[1000][2];
 Celula arena[15][15];
 
 //declaro os vetores de movimento
@@ -53,7 +55,7 @@ FILE * display;
 
 FILE * create_display(){
     FILE * _display;
-    _display = popen("./apres", "w");
+    _display = popen("python3 apres", "w");
     return _display;
 }
 
@@ -119,18 +121,18 @@ Maquina *cria_maquina(INSTR *p) {
     if (!m) Fatal("Memória insuficiente",4);
     m -> x = coordX;
     m -> y = coordY;
-        do{
-            int coordX = rand()%15;
-            int coordY = rand()%15;
+        while(arena[coordX][coordY].ocupado == 1){
+            coordX = rand()%15;
+            coordY = rand()%15;
             m -> x = coordX;
             m -> y = coordY;
-        }while(arena[coordX][coordY].ocupado == 1);
-    arena[coordX][coordY].ocupado = 1;
+        }
     m->ataque = 30;
     m->vida = 100;
     m->cristais = 0;
     m->ip = 0;
     m->prog = p;
+    arena[coordX][coordY].ocupado = 1;
     return m;
 }
 
@@ -148,6 +150,8 @@ void fazbase(int x,int y,int z){
         x = coordX;
         y = coordY;
     }
+    bases[z][0] = x;
+    bases[z][1] = y;
     arena[x][y].terreno = 3;
     arena[x][y].base = z;
     update_base("BASE_", z, x, y);
@@ -157,15 +161,15 @@ void fazbase(int x,int y,int z){
 //vincula uma base para cada membro de exercito
 //exercito = grupo de robos/tropas
 void InsereExercito(int x, int tropas, INSTR *p){
-    Maquina *maq;
     srand(time(NULL));
     int coordX = rand()%15;
     int coordY = rand()%15;
     fazbase(coordX, coordY, x);
     for(int j = 0; j < tropas; j++){
+        Maquina *maq;
         maq = cria_maquina(p);
-        maq -> baseX = coordX;
-        maq -> baseY = coordY;
+        maq -> baseX = bases[x][0];
+        maq -> baseY = bases[x][1];
         registro_maquina(maq);
         create_robot("GILEAD_", x);
         update_robot(maq->id, -1, -1, maq->x, maq->y);
@@ -173,9 +177,9 @@ void InsereExercito(int x, int tropas, INSTR *p){
 
 }
 
-//remove o exercito x da base (i,j)
+//remove o exercito x
 void RemoveExercito(int x){
-    for(int i = 0; i < 110; i++){
+    for(int i = 0; i < 1000; i++){
         if(arena[a[i]->baseX][a[i] ->baseY].base == x){
             destroi_maquina(a[i]);
             a[i] = NULL;
@@ -186,11 +190,11 @@ void RemoveExercito(int x){
 //movimenta cada maquina m (n instruções)
 void Atualiza(int n){
     tempo++;
-    for(int i = 0; i < 110; i++)
+    for(int i = 0; i < 1000; i++)
         if(a[i] != NULL)
             exec_maquina(a[i], 50);
         else break;
-    
+
 }
 
 /* Alguns macros para facilitar a leitura do código */
@@ -206,9 +210,9 @@ void exec_maquina(Maquina *m, int n) {
     for (i = 0; i < n; i++) {
         OpCode   opc = prg[ip].instr;
         OPERANDO arg = prg[ip].op;
-        
+
         D(printf("%3d: %-4.4s %d\n     ", ip, CODES[opc], arg));
-        
+
         switch (opc) {
                 OPERANDO tmp;
                 OPERANDO op1;
@@ -228,7 +232,7 @@ void exec_maquina(Maquina *m, int n) {
             case ADD:
                 op1 = desempilha(pil);
                 op2 = desempilha(pil);
-                
+
                 if (op1.t == NUM && op2.t == NUM) {
                     res.t = NUM;
                     res.val.n = op1.val.n  + op2.val.n;
@@ -238,7 +242,7 @@ void exec_maquina(Maquina *m, int n) {
             case SUB:
                 op1 = desempilha(pil);
                 op2 = desempilha(pil);
-                
+
                 if (op1.t == NUM && op2.t == NUM) {
                     res.t = NUM;
                     res.val.n = op1.val.n  - op2.val.n;
@@ -248,7 +252,7 @@ void exec_maquina(Maquina *m, int n) {
             case MUL:
                 op1 = desempilha(pil);
                 op2 = desempilha(pil);
-                
+
                 if (op1.t == NUM && op2.t == NUM) {
                     res.t = NUM;
                     res.val.n = op1.val.n  * op2.val.n;
@@ -258,7 +262,7 @@ void exec_maquina(Maquina *m, int n) {
             case DIV:
                 op1 = desempilha(pil);
                 op2 = desempilha(pil);
-                
+
                 if (op1.t == NUM && op2.t == NUM) {
                     res.t = NUM;
                     res.val.n = op1.val.n  / op2.val.n;
@@ -411,13 +415,13 @@ void exec_maquina(Maquina *m, int n) {
                         break;
                 }
         }
-        
+
         D(printf("Topo: %d, RBP: %d\n", topo, rbp ));
         D(imprime(pil,10));
         D(puts("\n"));
         D(imprime(exec,20));
         D(puts("\n\n"));
-        
+
         ip++;
     }
 }
@@ -444,7 +448,7 @@ void constroi(){
                 terreno=0;
             else if(tipo < probESTRADA+probMONTANHA)
                 terreno=1;
-            else 
+            else
                 terreno=2;
 
             tipo=rand()%100;
@@ -502,7 +506,7 @@ void vizinhanca(Maquina *m){
             m->vizi_amigos[k] = 0;
             m->vizi_inimigos[k] = 0;
         }
-        
+
     }
 }
 
@@ -511,12 +515,12 @@ void Move(Maquina *soldier, int dir, int n){
     if(isvalid(soldier->x + n*movx[dir],soldier->y + n*movy[dir])==1){
         if((arena[soldier->x + n*movx[dir]][soldier->y + n*movy[dir]]).ocupado == 0){
             arena[soldier->x][soldier->y].ocupado = 0;
-            soldier->x = soldier->x + n*movx[dir];
-            soldier->y = soldier->y + n*movx[dir];
-            arena[soldier->x][soldier->y].ocupado = 1;
-            vizinhanca(soldier);
             update_robot(soldier->id, soldier->x, soldier->y, soldier->x + n*movx[dir],
              soldier->y + n*movy[dir]);
+            soldier->x = soldier->x + n*movx[dir];
+            soldier->y = soldier->y + n*movy[dir];
+            arena[soldier->x][soldier->y].ocupado = 1;
+            vizinhanca(soldier);
             printf("Soldado moveu para %d %d \n",(soldier->x + movx[dir]),
                 (soldier->y + movy[dir]));
         }else {printf("%s", "A Celula ja estava ocupada\n");}
@@ -524,14 +528,14 @@ void Move(Maquina *soldier, int dir, int n){
 }
 
 //ataca a maquina localizada na coordenada (x,y)
-void Attack(Maquina *soldier, int dir, Celula arena[15][15]){
+void Attack(Maquina *soldier, int dir){
     if(isvalid(soldier->x + movx[dir],soldier->y + movy[dir])==1){
         printf("Batalha acontecendo em %d %d \n",(soldier->x + movx[dir]),
             (soldier->y + movy[dir]));
         if((arena[soldier->x + movx[dir]][soldier->y + movy[dir]]).ocupado == 1){
             int posx=soldier->x + movx[dir];
             int posy=soldier->y + movy[dir];
-            for(int i = 0; i < 110; i++)
+            for(int i = 0; i < 1000; i++)
                 if(a[i]!=NULL && a[i]->x == posx && a[i]->y == posy){
                     a[i]->vida -= soldier->ataque;
                     if(a[i]->vida <= 0){
@@ -545,7 +549,7 @@ void Attack(Maquina *soldier, int dir, Celula arena[15][15]){
                             a[i]->cristais--;
                             soldier->cristais++;
                         }
-                    }   
+                    }
                 }
         }else {printf("%s", "Nenhum robô nesse local\n");}
     }else {printf("%s", "Movimento fora dos limites da arena.\n");}
@@ -580,15 +584,20 @@ void Put(Maquina *soldier, int dir){
 //pequena main para testes
 
 int main(){
+    printf("TESTE");
     display = create_display();
     constroi();
     InsereExercito(1, 3, NULL);
+    InsereExercito(2, 3, NULL);
+    RemoveExercito(2);
     Move(a[0], 2, 1);
     Retrieve(a[0],1);
     Move(a[0], 0, 5);
     Retrieve(a[0],1);
     Move(a[0], 3, 2);
     Retrieve(a[0],1);
+    Move(a[1], 3, 2);
+    Retrieve(a[1],1);
     Put(a[0],5);
     getchar();
 }
