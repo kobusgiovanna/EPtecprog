@@ -44,7 +44,7 @@ int tempo=0;
 //vetor que armazena cada maquina
 Maquina *a[1000];
 //vetor que armazena os pares (x,y) das bases
-int bases[1000][1000];
+int bases[1000][2];
 Celula arena[15][15];
 
 //declaro os vetores de movimento
@@ -587,17 +587,17 @@ int main(){
     printf("TESTE");
     display = create_display();
     constroi();
-    InsereExercito(1, 4, NULL);
-    InsereExercito(2, 4, NULL);
-    RemoveExercito(1);
-    // Move(a[0], 2, 1);
-    // Retrieve(a[0],1);
-    // Move(a[0], 0, 5);
-    // Retrieve(a[0],1);
-    // Move(a[0], 3, 2);
-    // Retrieve(a[0],1);
-    // Move(a[1], 3, 2);
-    // Retrieve(a[1],1);
-    // Put(a[0],5);
+    InsereExercito(1, 3, NULL);
+    InsereExercito(2, 3, NULL);
+    RemoveExercito(2);
+    Move(a[0], 2, 1);
+    Retrieve(a[0],1);
+    Move(a[0], 0, 5);
+    Retrieve(a[0],1);
+    Move(a[0], 3, 2);
+    Retrieve(a[0],1);
+    Move(a[1], 3, 2);
+    Retrieve(a[1],1);
+    Put(a[0],5);
     getchar();
 }
