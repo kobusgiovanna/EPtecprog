@@ -43,6 +43,8 @@ char *CODES[] = {
 int tempo=0;
 //vetor que armazena cada maquina
 Maquina *a[1000];
+//vetor que armazena os pares (x,y) das bases
+int bases[1000][1000];
 Celula arena[15][15];
 
 //declaro os vetores de movimento
@@ -124,7 +126,7 @@ Maquina *cria_maquina(INSTR *p) {
             coordY = rand()%15;
             m -> x = coordX;
             m -> y = coordY;
-          }
+        }
     m->ataque = 30;
     m->vida = 100;
     m->cristais = 0;
@@ -148,6 +150,8 @@ void fazbase(int x,int y,int z){
         x = coordX;
         y = coordY;
     }
+    bases[z][0] = x;
+    bases[z][1] = y;
     arena[x][y].terreno = 3;
     arena[x][y].base = z;
     update_base("BASE_", z, x, y);
@@ -164,8 +168,8 @@ void InsereExercito(int x, int tropas, INSTR *p){
     for(int j = 0; j < tropas; j++){
         Maquina *maq;
         maq = cria_maquina(p);
-        maq -> baseX = coordX;
-        maq -> baseY = coordY;
+        maq -> baseX = bases[x][0];
+        maq -> baseY = bases[x][1];
         registro_maquina(maq);
         create_robot("GILEAD_", x);
         update_robot(maq->id, -1, -1, maq->x, maq->y);
@@ -173,7 +177,7 @@ void InsereExercito(int x, int tropas, INSTR *p){
 
 }
 
-//remove o exercito x da base (i,j)
+//remove o exercito x
 void RemoveExercito(int x){
     for(int i = 0; i < 1000; i++){
         if(arena[a[i]->baseX][a[i] ->baseY].base == x){
@@ -585,6 +589,7 @@ int main(){
     constroi();
     InsereExercito(1, 4, NULL);
     InsereExercito(2, 4, NULL);
+    RemoveExercito(1);
     // Move(a[0], 2, 1);
     // Retrieve(a[0],1);
     // Move(a[0], 0, 5);
