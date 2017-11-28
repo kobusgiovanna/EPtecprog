@@ -582,7 +582,7 @@ void Put(Maquina *soldier, int dir){
 int main(){
     display = create_display();
     constroi();
-    InsereExercito(0, 1, NULL);
+    InsereExercito(1, 3, NULL);
     Move(a[0], 2, 1);
     Retrieve(a[0],1);
     Move(a[0], 0, 5);
