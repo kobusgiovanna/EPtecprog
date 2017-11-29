@@ -122,9 +122,11 @@ class cell:
     # Responsável por adicionar um cristal numa célula
     def cristais(s, n):
 
+    	# Redesenha a célula caso haja um cristal desenhado
         # Não desenha o cristal se a quantidade é zero
         if (n < 1):
-            return;
+        	s.draw();
+        	return;
 
         # Coordenadas em pixels
         x, y = s.cx, s.cy
@@ -197,7 +199,7 @@ for line in fileinput.input():
     # Argumento 3: Posição vertical na Arena
     if r[0] == "cristal":
         r1, r2, r3 = int(r[1]), int(r[2]), int(r[3])
-        arena[r2][r3].cristais(int(r[1]))
+        arena[r2][r3].cristais(r1)
         cristais[r2][r3] = r1
         atu()
         continue
@@ -232,7 +234,7 @@ for line in fileinput.input():
         robs[ri].draw(di,dj)
 
     # tempo de espera para atualização, apenas para testes
-    pg.time.delay(400)
+    pg.time.delay(600)
 
     atu()
     for evt in pg.event.get():

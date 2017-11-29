@@ -119,14 +119,12 @@ Maquina *cria_maquina(INSTR *p) {
     int coordY = rand()%15;
     Maquina *m = (Maquina*)malloc(sizeof(Maquina));
     if (!m) Fatal("Memória insuficiente",4);
-    m -> x = coordX;
-    m -> y = coordY;
-        while(arena[coordX][coordY].ocupado == 1){
-            coordX = rand()%15;
-            coordY = rand()%15;
-            m -> x = coordX;
-            m -> y = coordY;
-        }
+    while(arena[coordX][coordY].ocupado){
+        coordX = rand()%15;
+        coordY = rand()%15;
+    }
+    m->x = coordX;
+    m->y = coordY;
     m->ataque = 30;
     m->vida = 100;
     m->cristais = 0;
@@ -154,12 +152,13 @@ void fazbase(int x,int y,int z){
     bases[z][1] = y;
     arena[x][y].terreno = 3;
     arena[x][y].base = z;
+    arena[x][y].ocupado = 1;
     update_base("BASE_", z, x, y);
 }
 
-//adiciona o x-ésimo exercito
-//vincula uma base para cada membro de exercito
-//exercito = grupo de robos/tropas
+// Adiciona o x-ésimo exercito
+// Vincula uma base para cada membro de exercito
+// Exercito = grupo de robos/tropas
 void InsereExercito(int x, int tropas, INSTR *p){
     srand(time(NULL));
     int coordX = rand()%15;
@@ -560,7 +559,7 @@ void Retrieve(Maquina *soldier, int dir){
     if(isvalid(soldier->x + movx[dir],soldier->y + movy[dir])==1){
         if((arena[soldier->x + movx[dir]][soldier->y + movy[dir]]).cristais > 0){
             PutCristal(-1, soldier->x + movx[dir], soldier->y + movy[dir]);
-            soldier->cristais+=1;
+            soldier->cristais += 1;
             vizinhanca(soldier);
             printf("Cristal pegado de %d %d \n",(soldier->x + movx[dir]),
                 (soldier->y + movy[dir]));
@@ -587,17 +586,29 @@ int main(){
     printf("TESTE");
     display = create_display();
     constroi();
-    InsereExercito(1, 3, NULL);
-    InsereExercito(2, 3, NULL);
-    RemoveExercito(2);
-    Move(a[0], 2, 1);
-    Retrieve(a[0],1);
-    Move(a[0], 0, 5);
-    Retrieve(a[0],1);
-    Move(a[0], 3, 2);
-    Retrieve(a[0],1);
-    Move(a[1], 3, 2);
-    Retrieve(a[1],1);
-    Put(a[0],5);
+    // 2 Exércitos - E1, E2
+    // N1 número de tropas de E1 (1-5)
+    // N2 número de tropas de E2 (1-5)
+    // X ações de E1 ou E2
+    // P tropa atual
+    int N1 = 1 + rand() % 3;
+    int N2 = 1 + rand() % 3;
+    int X  = 1 + rand() % 100;
+    InsereExercito(0, N1, NULL);
+    InsereExercito(1, N2, NULL);
+    for (int i = 0; i < X; i++){
+        int P = rand() % (N1 + N2);
+        Move(a[P], rand() % 6, 1);
+        Retrieve(a[P], rand() % 6);
+        Put(a[P], rand() % 6);
+        Attack(a[P], rand() % 6);
+    }
     getchar();
 }
+
+
+
+// TRATAR:
+// Pôr cristal onde tem base
+// Remoção do desenho de um cristal quando o robô estiver na célula
+// Possível inconsistência de coordenadas do tabuleiro entre Interface e Máquina
