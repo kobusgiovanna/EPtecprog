@@ -28,7 +28,7 @@ typedef struct {
   int vizi_inimigos[6];
 } Maquina;
 
-Maquina *cria_maquina(INSTR *p);
+Maquina *cria_maquina(INSTR *p, int x, int y);
 
 void destroi_maquina(Maquina *m);
 

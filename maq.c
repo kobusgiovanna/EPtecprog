@@ -113,26 +113,17 @@ void registro_maquina(Maquina *m){
 
 
 //cria uma maquina m, estabelece uma coordenada nao ocupada para a mesma
-Maquina *cria_maquina(INSTR *p) {
-    srand(time(NULL));
-    int coordX = rand()%15;
-    int coordY = rand()%15;
+Maquina *cria_maquina(INSTR *p,int x,int y) {
     Maquina *m = (Maquina*)malloc(sizeof(Maquina));
     if (!m) Fatal("Memória insuficiente",4);
-    m -> x = coordX;
-    m -> y = coordY;
-        while(arena[coordX][coordY].ocupado == 1){
-            coordX = rand()%15;
-            coordY = rand()%15;
-            m -> x = coordX;
-            m -> y = coordY;
-        }
+    m -> x = x;
+    m -> y = y;
     m->ataque = 30;
     m->vida = 100;
     m->cristais = 0;
     m->ip = 0;
     m->prog = p;
-    arena[coordX][coordY].ocupado = 1;
+    arena[x][y].ocupado = 1;
     return m;
 }
 
@@ -142,32 +133,39 @@ void destroi_maquina(Maquina *m) {
 }
 
 //faz a base do time z no par (x,y)
-void fazbase(int x,int y,int z){
-    while(arena[x][y].ocupado == 1 || arena[x][y].base != 0 || arena[x][y].cristais){
-        srand(time(NULL));
-        int coordX = rand()%15;
-        int coordY = rand()%15;
-        x = coordX;
-        y = coordY;
+int fazbase(int x,int y,int z){
+    if(arena[x][y].ocupado == 1 || arena[x][y].base != 0 || arena[x][y].cristais>0){
+        return 0;
+    }
+    for(int i=0;i<6;i++){
+        if(arena[x+movx[i]][y+movy[i]].ocupado==1)
+            return 0;
     }
     bases[z][0] = x;
     bases[z][1] = y;
     arena[x][y].terreno = 3;
     arena[x][y].base = z;
     update_base("BASE_", z, x, y);
+    return 1;
 }
 
 //adiciona o x-ésimo exercito
-//vincula uma base para cada membro de exercito
-//exercito = grupo de robos/tropas
-void InsereExercito(int x, int tropas, INSTR *p){
+//vincula uma base para cada exercito
+//cria seis tropas para cada exercito
+void InsereExercito(int x, INSTR *p){
     srand(time(NULL));
-    int coordX = rand()%15;
-    int coordY = rand()%15;
-    fazbase(coordX, coordY, x);
-    for(int j = 0; j < tropas; j++){
+    int coordX = 1 + rand()%13;
+    int coordY = 1 + rand()%13;
+    while(fazbase(coordX, coordY, x)==0){
+        srand(time(NULL));
+        int coordX = 1 + rand()%13;
+        int coordY = 1 + rand()%13;
+    }
+    printf("Base em %d %d \n",coordX,coordY);
+    for(int i=0;i<6;i++){
         Maquina *maq;
-        maq = cria_maquina(p);
+        maq = cria_maquina(p,coordX+movx[i],coordY+movy[i]);
+        printf("Soldado criado em %d %d \n",coordX+movx[i],coordY+movy[i]);
         maq -> baseX = bases[x][0];
         maq -> baseY = bases[x][1];
         registro_maquina(maq);
@@ -479,7 +477,7 @@ int isvalid(int x,int y){
 }
 
 //verifica os arredores do robo
-void vizinhanca(Maquina *m){
+void neighborhood(Maquina *m){
     int i=m->x;
     int j=m->y;
     for(int k = 0; k < 6; k++){
@@ -510,8 +508,64 @@ void vizinhanca(Maquina *m){
     }
 }
 
+//verifica se ha robo do mesmo time em celula adjacente
+int hasfriendlyrobot(Maquina *m){
+    neighborhood(m);
+    for(int i=0;i<6;i++){
+        int x = m->x + movx[i];
+        int y = m->y + movy[i];
+        if(isvalid(x,y)==0) continue;
+        if(m->vizi_amigos[i]==1){
+            return 1;
+        }
+    }
+    return 0;
+}
+
+//verifica se ha robo de outro time em celula adjacente
+int hasenemyrobot(Maquina *m){\
+    neighborhood(m);
+    for(int i=0;i<6;i++){
+        int x = m->x + movx[i];
+        int y = m->y + movy[i];
+        if(isvalid(x,y)==0) continue;
+        if(m->vizi_inimigos[i]==1){
+            return 1;
+        }
+    }
+    return 0;
+}
+
+//retorna a posicao de um robo do mesmo time em celula adjacente
+int findfriendlyrobot(Maquina *m){
+    neighborhood(m);
+    for(int i=0;i<6;i++){
+        int x = m->x + movx[i];
+        int y = m->y + movy[i];
+        if(isvalid(x,y)==0) continue;
+        if(m->vizi_amigos[i]==1){
+            return i;
+        }
+    }
+    return -1;
+}
+
+//verifica se ha robo de outro time em celula adjacente
+int findenemyrobot(Maquina *m){
+    neighborhood(m);
+    for(int i=0;i<6;i++){
+        int x = m->x + movx[i];
+        int y = m->y + movy[i];
+        if(isvalid(x,y)==0) continue;
+        if(m->vizi_amigos[i]==1){
+            return i;
+        }
+    }
+    return -1;
+}
+
 //move a maquina até coordenada (x,y)
-void Move(Maquina *soldier, int dir, int n){
+void move(Maquina *soldier, int dir, int n){
     if(isvalid(soldier->x + n*movx[dir],soldier->y + n*movy[dir])==1){
         if((arena[soldier->x + n*movx[dir]][soldier->y + n*movy[dir]]).ocupado == 0){
             arena[soldier->x][soldier->y].ocupado = 0;
@@ -520,7 +574,7 @@ void Move(Maquina *soldier, int dir, int n){
             soldier->x = soldier->x + n*movx[dir];
             soldier->y = soldier->y + n*movy[dir];
             arena[soldier->x][soldier->y].ocupado = 1;
-            vizinhanca(soldier);
+            neighborhood(soldier);
             printf("Soldado moveu para %d %d \n",(soldier->x + movx[dir]),
                 (soldier->y + movy[dir]));
         }else {printf("%s", "A Celula ja estava ocupada\n");}
@@ -528,7 +582,7 @@ void Move(Maquina *soldier, int dir, int n){
 }
 
 //ataca a maquina localizada na coordenada (x,y)
-void Attack(Maquina *soldier, int dir){
+void attack(Maquina *soldier, int dir){
     if(isvalid(soldier->x + movx[dir],soldier->y + movy[dir])==1){
         printf("Batalha acontecendo em %d %d \n",(soldier->x + movx[dir]),
             (soldier->y + movy[dir]));
@@ -552,16 +606,16 @@ void Attack(Maquina *soldier, int dir){
                     }
                 }
         }else {printf("%s", "Nenhum robô nesse local\n");}
-    }else {printf("%s", "Movimento fora dos limites da arena.\n");}
+    }else {printf("%s", "Ação fora dos limites da arena.\n");}
 }
 
 //recolhe cristal
-void Retrieve(Maquina *soldier, int dir){
+void retrieve(Maquina *soldier, int dir){
     if(isvalid(soldier->x + movx[dir],soldier->y + movy[dir])==1){
         if((arena[soldier->x + movx[dir]][soldier->y + movy[dir]]).cristais > 0){
             PutCristal(-1, soldier->x + movx[dir], soldier->y + movy[dir]);
             soldier->cristais+=1;
-            vizinhanca(soldier);
+            neighborhood(soldier);
             printf("Cristal pegado de %d %d \n",(soldier->x + movx[dir]),
                 (soldier->y + movy[dir]));
         }else{printf("%s", "Nao ha cristal nessa posicao\n");}
@@ -569,12 +623,12 @@ void Retrieve(Maquina *soldier, int dir){
 }
 
 //deposita cristal
-void Put(Maquina *soldier, int dir){
+void put(Maquina *soldier, int dir){
     if(isvalid(soldier->x + movx[dir],soldier->y + movy[dir])==1){
         if(soldier->cristais > 0){
             PutCristal(1, soldier->x + movx[dir], soldier->y + movy[dir]);
             soldier->cristais--;
-            vizinhanca(soldier);
+            neighborhood(soldier);
             printf("Cristal depositado em %d %d \n",(soldier->x + movx[dir]),
                 (soldier->y + movy[dir]));
         }else{printf("%s", "Seu soldado nao tem cristais\n");}
@@ -587,17 +641,17 @@ int main(){
     printf("TESTE");
     display = create_display();
     constroi();
-    InsereExercito(1, 3, NULL);
-    InsereExercito(2, 3, NULL);
+    InsereExercito(1, NULL);
+    InsereExercito(2, NULL);
     RemoveExercito(2);
-    Move(a[0], 2, 1);
-    Retrieve(a[0],1);
-    Move(a[0], 0, 5);
-    Retrieve(a[0],1);
-    Move(a[0], 3, 2);
-    Retrieve(a[0],1);
-    Move(a[1], 3, 2);
-    Retrieve(a[1],1);
-    Put(a[0],5);
+    move(a[0], 2, 1);
+    retrieve(a[0],1);
+    move(a[0], 0, 5);
+    retrieve(a[0],1);
+    move(a[0], 3, 2);
+    retrieve(a[0],1);
+    move(a[1], 3, 2);
+    retrieve(a[1],1);
+    put(a[0],5);
     getchar();
 }
