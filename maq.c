@@ -145,6 +145,7 @@ int fazbase(int x,int y,int z){
     bases[z][1] = y;
     arena[x][y].terreno = 3;
     arena[x][y].base = z;
+    arena[x][y].ocupado = 1;
     update_base("BASE_", z, x, y);
     return 1;
 }
@@ -641,17 +642,25 @@ int main(){
     printf("TESTE");
     display = create_display();
     constroi();
+    // 2 Exércitos - E1, E2
+    // X ações de E1 ou E2
+    // P tropa atual
+    int X  = 1 + rand() % 100;
+    InsereExercito(0, NULL);
     InsereExercito(1, NULL);
-    InsereExercito(2, NULL);
-    RemoveExercito(2);
-    move(a[0], 2, 1);
-    retrieve(a[0],1);
-    move(a[0], 0, 5);
-    retrieve(a[0],1);
-    move(a[0], 3, 2);
-    retrieve(a[0],1);
-    move(a[1], 3, 2);
-    retrieve(a[1],1);
-    put(a[0],5);
+    for (int i = 0; i < X; i++){
+        int P = rand() % (12);
+        move(a[P], rand() % 6, 1);
+        retrieve(a[P], rand() % 6);
+        put(a[P], rand() % 6);
+        attack(a[P], rand() % 6);
+    }
     getchar();
 }
+
+
+
+// TRATAR:
+// Pôr cristal onde tem base
+// Remoção do desenho de um cristal quando o robô estiver na célula
+// Possível inconsistência de coordenadas do tabuleiro entre Interface e Máquina
