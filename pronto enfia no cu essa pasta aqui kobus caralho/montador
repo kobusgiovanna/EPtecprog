@@ -61,7 +61,7 @@ for l in lines:
 print("};")
 #começo main -> teste
 print("\n\nint main(int ac, char **av) {")
-print("\tMaquina *maq = cria_maquina(prog, 0, 0);")
+print("\tMaquina *maq = cria_maquina(prog);")
 print("\tputs(\"---\");")
 print("\texec_maquina(maq, 100000);")
 print("\tputs(\"---\");")

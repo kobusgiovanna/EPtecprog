@@ -209,6 +209,7 @@ void exec_maquina(Maquina *m, int n) {
     for (i = 0; i < n; i++) {
         OpCode   opc = prg[ip].instr;
         OPERANDO arg = prg[ip].op;
+        arg.val.n = prg[ip];
 
         D(printf("%3d: %-4.4s %d\n     ", ip, CODES[opc], arg));
 
@@ -638,25 +639,25 @@ void put(Maquina *soldier, int dir){
 
 //pequena main para testes
 //para testar o motor, comentar essa main
-int main(){
-    printf("TESTE");
-    display = create_display();
-    constroi();
-    // 2 Exércitos - E1, E2
-    // X ações de E1 ou E2
-    // P tropa atual
-    int X  = 1 + rand() % 100;
-    InsereExercito(0, NULL);
-    InsereExercito(1, NULL);
-    for (int i = 0; i < X; i++){
-        int P = rand() % (12);
-        move(a[P], rand() % 6, 1);
-        retrieve(a[P], rand() % 6);
-        put(a[P], rand() % 6);
-        attack(a[P], rand() % 6);
-    }
-    getchar();
-}
+//int main(){
+//    printf("TESTE");
+//    display = create_display();
+//    constroi();
+//    // 2 Exércitos - E1, E2
+//    // X ações de E1 ou E2
+//    // P tropa atual
+//    int X  = 1 + rand() % 100;
+//    InsereExercito(0, NULL);
+//    InsereExercito(1, NULL);
+//    for (int i = 0; i < X; i++){
+//        int P = rand() % (12);
+//        move(a[P], rand() % 6, 1);
+//        retrieve(a[P], rand() % 6);
+//        put(a[P], rand() % 6);
+//        attack(a[P], rand() % 6);
+//    }
+//    getchar();
+//}
 
 
 

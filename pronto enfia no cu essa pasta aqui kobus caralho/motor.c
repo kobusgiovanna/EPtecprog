@@ -32,7 +32,7 @@ INSTR prog[] = {
 
 
 int main(int ac, char **av) {
-	Maquina *maq = cria_maquina(prog, 0, 0);
+	Maquina *maq = cria_maquina(prog);
 	puts("---");
 	exec_maquina(maq, 100000);
 	puts("---");
