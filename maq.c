@@ -637,7 +637,7 @@ void put(Maquina *soldier, int dir){
 }
 
 //pequena main para testes
-
+//para testar o motor, comentar essa main
 int main(){
     printf("TESTE");
     display = create_display();

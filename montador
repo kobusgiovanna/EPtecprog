@@ -1,9 +1,6 @@
 #!/usr/bin/python3
 
 """
-Lê, na entrada padrão, um programa na linguagem de montagem da máquina
-virtual e retorna um programa em C que executa este programa.
-
 Uso:
     ./montador < entrada
 """
@@ -34,7 +31,7 @@ for l in lines:
 
 ip = 0
 
-print("#include <stdio.h>\n#include \"maq.h\" \n")
+print(" #include <stdio.h>\n #include <stdlib.h>\n #include \"maq.h\" \n")
 
 print("INSTR prog[] = {")
 for l in lines:
@@ -61,9 +58,9 @@ for l in lines:
     else:
         print()
     ip += 1
-print("};\n")
-
-print("int main(int ac, char **av) {")
+print("};")
+#começo main -> teste
+print("\n\nint main(int ac, char **av) {")
 print("\tMaquina *maq = cria_maquina(prog);")
 print("\tputs(\"---\");")
 print("\texec_maquina(maq, 100000);")
@@ -71,6 +68,7 @@ print("\tputs(\"---\");")
 print("\tdestroi_maquina(maq);")
 print("\treturn 0;")
 print("}")
+#fim main
 
 
 # Local variables:
