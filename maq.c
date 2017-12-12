@@ -113,17 +113,17 @@ void registro_maquina(Maquina *m){
 
 
 //cria uma maquina m, estabelece uma coordenada nao ocupada para a mesma
-Maquina *cria_maquina(INSTR *p,int x,int y) {
+Maquina *cria_maquina(INSTR *p, int coordX, int coordY) {
     Maquina *m = (Maquina*)malloc(sizeof(Maquina));
     if (!m) Fatal("Memória insuficiente",4);
-    m -> x = x;
-    m -> y = y;
+    m->x = coordX;
+    m->y = coordY;
     m->ataque = 30;
     m->vida = 100;
     m->cristais = 0;
     m->ip = 0;
     m->prog = p;
-    arena[x][y].ocupado = 1;
+    arena[coordX][coordY].ocupado = 1;
     return m;
 }
 
@@ -134,13 +134,13 @@ void destroi_maquina(Maquina *m) {
 
 //faz a base do time z no par (x,y)
 int fazbase(int x,int y,int z){
-    if(arena[x][y].ocupado == 1 || arena[x][y].base != 0 || arena[x][y].cristais>0){
+    if(arena[x][y].ocupado || arena[x][y].base != 0 || arena[x][y].cristais)
         return 0;
-    }
-    for(int i=0;i<6;i++){
-        if(arena[x+movx[i]][y+movy[i]].ocupado==1)
+    
+    for(int i = 0; i < 6; i++)
+        if(arena[x + movx[i]][y + movy[i]].ocupado)
             return 0;
-    }
+    
     bases[z][0] = x;
     bases[z][1] = y;
     arena[x][y].terreno = 3;
@@ -154,19 +154,18 @@ int fazbase(int x,int y,int z){
 //vincula uma base para cada exercito
 //cria seis tropas para cada exercito
 void InsereExercito(int x, INSTR *p){
+
     srand(time(NULL));
     int coordX = 1 + rand()%13;
     int coordY = 1 + rand()%13;
-    while(fazbase(coordX, coordY, x)==0){
-        srand(time(NULL));
-        int coordX = 1 + rand()%13;
-        int coordY = 1 + rand()%13;
+    while(!fazbase(coordX, coordY, x)){
+        coordX = 1 + rand()%13;
+        coordY = 1 + rand()%13;
     }
-    printf("Base em %d %d \n",coordX,coordY);
-    for(int i=0;i<6;i++){
+    printf("Base em %d %d \n", coordX, coordY);
+    for(int j = 0; j < 6; j++){
         Maquina *maq;
-        maq = cria_maquina(p,coordX+movx[i],coordY+movy[i]);
-        printf("Soldado criado em %d %d \n",coordX+movx[i],coordY+movy[i]);
+        maq = cria_maquina(p, coordX + movx[j], coordY + movy[j]);
         maq -> baseX = bases[x][0];
         maq -> baseY = bases[x][1];
         registro_maquina(maq);
@@ -209,6 +208,7 @@ void exec_maquina(Maquina *m, int n) {
     for (i = 0; i < n; i++) {
         OpCode   opc = prg[ip].instr;
         OPERANDO arg = prg[ip].op;
+        //arg.val.n = prg[ip];
 
         D(printf("%3d: %-4.4s %d\n     ", ip, CODES[opc], arg));
 
@@ -636,29 +636,185 @@ void put(Maquina *soldier, int dir){
     }else{printf("%s", "Posicao invalida\n");}
 }
 
-//pequena main para testes
+//<<<<<<< HEAD
+
+//----------------------------------------------------------------------
+// TESTES
+// 1 : ALEATÓRIO com 1 exército
+// 2 : ALEATÓRIO com 2 exércitos
+// 3 : ALEATÓRIO com 3 exércitos
+// 10: ALEATÓRIO com 10 exércitos
+// n : ALEATÓRIO com n exércitos
+int TEST = 2;
+
+// N1 movimentos por exército
+int N1 = 100;
+// Tamanho máximo do salto
+int SALTO = 1;
+// N2 recolhecimentos de cristal por exército
+int N2 = 20;
+// N3 depósito de cristal por exército
+int N3 = 15;
+// N4 ataques por exército
+int N4 = 30;
+// Proporção de ações para cada tropa do exército
+float P[6]  = {0.2, 0.3, 0.1, 0.1, 0.15, 0.15};
+// 0 ou 1 para impressão das posições de todas as tropas do exército
+int FR = 1;
+// 0 ou 1 para impressão da existência de robo inimigo em célula adjacente
+int ECR = 1;
+// 0 ou 1 para impressão da existência de robo amigo em célula adjacente
+int FCR = 1;
+// 0 roda as ações dos times de forma alternada, 1 roda todas as ações de um time antes do outro
+int TN = 0;
+
+//=========================================================================
+
+void executaAcoes(int exercito, int tropa){
+    int r;
+    int n1 = 0, n2 = 0, n3 = 0, n4 = 0;
+    float c = P[tropa]; 
+    int cN1 = (int) (c * N1);
+    int cN2 = (int) (c * N2);
+    int cN3 = (int) (c * N3);
+    int cN4 = (int) (c * N4);
+
+    while (1){
+        
+        r = rand() % 2;
+        
+        
+        if (r && n1 < cN1){
+            move(a[exercito * 6 + tropa], rand() % 6, rand() % SALTO + 1);
+            n1++;
+        }
+
+        r = rand() % 2;
+        if (r && n2 < cN2){
+            retrieve(a[exercito * 6 + tropa], rand() % 6);     
+            n2++; 
+        }
+
+        r = rand() % 2;
+         if (r && n3 < cN3){
+            
+            put(a[exercito * 6 + tropa], rand() % 6);    
+            n3++; 
+        }
+
+        r = rand() % 2;
+        if (r && n4 < cN4){
+            attack(a[exercito * 6 + tropa], rand() % 6);
+            n4++;
+        }
+
+        if (n1 >= cN1 && n2 >= cN2 && n3 >= cN3 && n4 >= cN4)
+            break;
+        
+    }
+
+}
+
+
+void test(){
+    int i, j, k;
+    int contador[TEST][6][4];
+    // int finished[TEST * 6 * 4];
+
+  //  for (i = 0; i < TEST * 6 * 4; i++)
+    //    finished[i] = 0;
+
+    for (i = 0; i < TEST; i++)
+        for (j = 0; j < 6; j++)
+            for (k = 0; k < 4; k++)
+                contador[i][j][k] = 0;
+
+    for (i = 0; i < TEST; i++)
+        InsereExercito(i, NULL);
+    
+    if (TN)
+        for (i = 0; i < TEST; i++)
+            for (j = 0; j < 6; j++)
+                executaAcoes(i, j);
+            
+    else
+        while (1){
+            for (i = 0; i < TEST; i++)
+                for (j = 0; j < 6; j++){
+                    if (contador[i][j][0] < (int)(N1 * P[j])){
+                        contador[i][j][0]++;
+                        move(a[i * 6 + j], rand() % 6, rand() % SALTO + 1);
+                    }
+                    //else
+                      //  finished[0] = 1;
+                    if (contador[i][j][1] < (int)(N2 * P[j])){
+                        contador[i][j][1]++;
+                        retrieve(a[i * 6 + j], rand() % 6);
+                    }
+                  //  else
+                      //  finished++;
+                    if (contador[i][j][2] < (int)(N3 * P[j])){
+                        contador[i][j][2]++;
+                        put(a[i * 6 + j], rand() % 6);
+                    }
+                   // else
+                     //   finished++;
+                    if (contador[i][j][3] < (int)(N4 * P[j])){
+                        contador[i][j][3]++;
+                        attack(a[i * 6 + j], rand() % 6);
+                    }
+                   // else
+                        //finished++;
+                }
+            //printf("FINISHED: %d", finished);
+          //  if (finished == TEST * 6 * 4){
+            //    printf("FIMGAMEOVER");
+              //  break;
+                
+            //}
+        }
+
+}
 
 int main(){
     printf("TESTE");
     display = create_display();
     constroi();
-    // 2 Exércitos - E1, E2
-    // X ações de E1 ou E2
-    // P tropa atual
-    int X  = 1 + rand() % 100;
-    InsereExercito(0, NULL);
+    test();
+    /*InsereExercito(0, NULL);
     InsereExercito(1, NULL);
-    for (int i = 0; i < X; i++){
+    for (int i = 0; i < 30; i++){
         int P = rand() % (12);
         move(a[P], rand() % 6, 1);
         retrieve(a[P], rand() % 6);
         put(a[P], rand() % 6);
         attack(a[P], rand() % 6);
-    }
+    }*/
     getchar();
 }
-
-
+//=======
+//pequena main para testes
+//para testar o motor, comentar essa main
+//int main(){
+//    printf("TESTE");
+//    display = create_display();
+//    constroi();
+//    // 2 Exércitos - E1, E2
+//    // X ações de E1 ou E2
+//    // P tropa atual
+//    int X  = 1 + rand() % 100;
+//    InsereExercito(0, NULL);
+//    InsereExercito(1, NULL);
+//    for (int i = 0; i < X; i++){
+//        int P = rand() % (12);
+//        move(a[P], rand() % 6, 1);
+//        retrieve(a[P], rand() % 6);
+//        put(a[P], rand() % 6);
+//        attack(a[P], rand() % 6);
+//    }
+//    getchar();
+//}
+//>>>>>>> bd282b7e2e8577a6a82172c9e7fe7fff94cd4a60
 
 // TRATAR:
 // Pôr cristal onde tem base
