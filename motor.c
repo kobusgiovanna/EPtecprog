@@ -31,11 +31,11 @@ INSTR prog[] = {
 };
 
 
-int main(int ac, char **av) {
+/*int main(int ac, char **av) {
 	Maquina *maq = cria_maquina(prog, 0, 0);
 	puts("---");
 	exec_maquina(maq, 100000);
 	puts("---");
 	destroi_maquina(maq);
 	return 0;
-}
+}*/

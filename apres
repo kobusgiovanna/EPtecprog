@@ -37,7 +37,7 @@ atu = pg.display.update
 scr.fill((0,200,0))
 atu()
 
-def convert(i ,j):
+def convert(j ,i):
     """
     Converte a coordenada (i,j) para a posição em pixels na janela
     """
