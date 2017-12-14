@@ -5,6 +5,7 @@
 #include "pilha.h"
 
 #define MAXMEM 100
+#define MAXFRM 30
 
 FILE * display;
 
@@ -15,7 +16,9 @@ typedef struct {
   INSTR *prog;
   int id;
   int ip;
+  int ib;
   int rbp;
+  int bp[MAXFRM];
   int cristais;
   int x, y;
   int baseX, baseY;
@@ -33,6 +36,10 @@ Maquina *cria_maquina(INSTR *p, int x, int y);
 void destroi_maquina(Maquina *m);
 
 void exec_maquina(Maquina *m, int n);
+
+int new_frame(Maquina *m, int pos);
+
+int del_frame(Maquina *m);
 
 FILE * create_display();
 

@@ -34,7 +34,9 @@ char *CODES[] = {
     "RCE",
     "ALC",
     "FRE",
-    "ATR"
+    "ATR",
+    "ENTRY",
+    "LEAVE"
 };
 #else
 #  define D(X)
@@ -196,6 +198,20 @@ void Atualiza(int n){
 
 }
 
+int new_frame(Maquina *m, int n) {
+    int ibc = m->ib;
+    if (ibc < MAXFRM-1) {
+        m->bp[++m->ib] = n+ibc;
+        return m->ib;
+    }
+    return -1;
+}
+
+int del_frame(Maquina *m) {
+    if (m->ib > 0) return --m->ib;
+    return -1;
+}
+
 /* Alguns macros para facilitar a leitura do código */
 #define ip (m->ip)
 #define pil (&m->pil)
@@ -209,7 +225,6 @@ void exec_maquina(Maquina *m, int n) {
     for (i = 0; i < n; i++) {
         OpCode   opc = prg[ip].instr;
         OPERANDO arg = prg[ip].op;
-        arg.val.n = prg[ip];
 
         D(printf("%3d: %-4.4s %d\n     ", ip, CODES[opc], arg));
 
@@ -414,6 +429,15 @@ void exec_maquina(Maquina *m, int n) {
                         empilhaint(pil, tmp.val.cel.base);
                         break;
                 }
+        
+            case ENTRY:
+                new_frame(m, arg.val.n);
+                break;
+                
+            case LEAVE:
+                del_frame(m);
+                break;
+
         }
 
         D(printf("Topo: %d, RBP: %d\n", topo, rbp ));
