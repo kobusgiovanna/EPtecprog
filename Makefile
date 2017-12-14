@@ -5,7 +5,7 @@ pilha: pilha.h pilha.c
 maq: maq.h maq.c
 	gcc -c maq.c
 motor: motor.c
-	gcc -c motor.c
+	gcc -c motor.c 
 os:
 	gcc pilha.o maq.o motor.o -o a.out
 clean:
