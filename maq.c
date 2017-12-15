@@ -824,6 +824,8 @@ void test(){
 
 }
 
+
+
 int main(){
     printf("TESTE");
     display = create_display();
@@ -831,6 +833,7 @@ int main(){
     test();
     getchar();
 }
+
 
 // TRATAR:
 // Pôr cristal onde tem base

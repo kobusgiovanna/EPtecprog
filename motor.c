@@ -38,4 +38,5 @@ INSTR prog[] = {
 	puts("---");
 	destroi_maquina(maq);
 	return 0;
-}*/
+}
+*/

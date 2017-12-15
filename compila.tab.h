@@ -66,11 +66,12 @@ extern int yydebug;
     FECHA = 276,
     SEP = 277,
     IF = 278,
-    WHILE = 279,
-    FUNC = 280,
-    PRINT = 281,
-    NEG = 282,
-    PWR = 283
+    ELSE = 279,
+    WHILE = 280,
+    FUNC = 281,
+    PRINT = 282,
+    NEG = 283,
+    PWR = 284
   };
 #endif
 
@@ -85,7 +86,7 @@ union YYSTYPE
   /* symrec *cod; */
   char cod[30];
 
-#line 89 "compila.tab.h" /* yacc.c:1909  */
+#line 90 "compila.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

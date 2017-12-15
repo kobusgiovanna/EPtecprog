@@ -15,6 +15,7 @@ E [Ee][+-]?{D}+
 ret(urn)?  { return RETt; }
 
 if      { return IF; }
+else    { return ELSE; }
 while	{ return WHILE; }
 func|def { return FUNC; }
 print   { return PRINT; }

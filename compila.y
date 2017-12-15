@@ -33,7 +33,7 @@ void AddInstr(OpCode op, int val) {
 %token <cod> ID
 %token ADDt SUBt MULt DIVt ASGN OPEN CLOSE RETt EOL
 %token EQt NEt LTt LEt GTt GEt ABRE FECHA SEP
-%token IF WHILE FUNC PRINT
+%token IF ELSE WHILE FUNC PRINT
 
 %right ASGN
 %left ADDt SUBt
@@ -105,6 +105,14 @@ Cond: IF OPEN  Expr {
 		 CLOSE  Bloco {
 		   prog[pega_end()].op.val.n = ip;
 		 };
+	| ELSE OPEN Expr {
+				salva_end(ip);
+				AddInstr(JIT, 0);
+			}
+			CLOSE Bloco {
+				prog[pega_end()].op.val.n = ip;
+			};
+	
 
 Loop: WHILE OPEN  {salva_end(ip);}
 	  		Expr  { salva_end(ip); AddInstr(JIF,0); }
@@ -195,12 +203,12 @@ int compilador(FILE *cod, INSTR *dest) {
   return r;
 }
 
-/* int main(int ac, char **av) */
-/* { */
-/*   ac --; av++; */
-/*   if (ac>0) */
-/* 	yyin = fopen(*av,"r"); */
+/*int main(int ac, char **av)
+{
+   ac --; av++; 
+   if (ac>0) 
+ 	yyin = fopen(*av,"r"); 
 
-/*   yyparse(); */
-/*   return 0; */
-/* } */
+   yyparse(); 
+   return 0; 
+ } */
