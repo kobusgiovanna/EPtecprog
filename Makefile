@@ -1,4 +1,4 @@
-all: instr pilha maq motor os compila
+all: instr pilha maq motor os compila.tab.o compila
 instr: instr.h
 pilha: pilha.h pilha.c
 	gcc -c pilha.c
